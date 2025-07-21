@@ -1,8 +1,11 @@
 #To do: Crits, Saving throws, Additional effects
 
 import random
+import json
 
 def run_a_fight(monsters:list):
+    "runs a fight between the first two monsters in the list until one is dead."
+
     m1=monsters[0]
     m2=monsters[1]
     print(m1["Name"], "vs.", m2["Name"])
@@ -35,12 +38,13 @@ def run_a_fight(monsters:list):
     print()
 
 def run_a_round(fight_order:list):
-    for m in fight_order:
-        m_opponent=find_opponent(fight_order, m)
-        print(m["Name"], "attacks", m_opponent["Name"])
-        attacks= get_attacks(m)
+    "fight a single round"
+    for m_active in fight_order:
+        m_opponent=find_opponent(fight_order, m_active)
+        print(m_active["Name"], "attacks", m_opponent["Name"])
+        attacks= get_attacks(m_active)
         for a in attacks:
-            print(m["Name"], "uses", a["attack name"])
+            print(m_active["Name"], "uses", a["attack name"])
             if does_attack_hit(a,m_opponent["AC"]):
 
                 dmg=compute_damage(a)
@@ -49,33 +53,37 @@ def run_a_round(fight_order:list):
                 if m_opponent["HP"]<=0:
                     return
             else:
-                print(m["Name"], "misses!")
+                print(m_active["Name"], "misses!")
 
 def does_attack_hit(attack:dict,AC:int):
+    "attacks hit or miss (rolling a d20)"
     to_hit=attack["to hit"]
     x=random.randint(1,20)
-    if x==1:
+    if x==1: #fumble
         return False
-    if x==20:
+    if x==20: #crit
         return True
     if x+to_hit>=AC:
         return True
     else:
         return False
 
-def get_attacks(m:dict):
+def get_attacks(monster:dict):
+    "get attacks for the monsters"
     result=[]
-    has_multiattack= m["Actions"]["Multiattack"]
-    for action in m["Actions"]:
+    has_multiattack= monster["Actions"]["Multiattack"]
+    for action in monster["Actions"]:
         if action=="Multiattack":
             continue
-        dice=(m["Actions"][action]["base damage"])
-        to_hit=(m["Actions"][action]["to hit"])
+        dice=(monster["Actions"][action]["base damage"])
+        to_hit=(monster["Actions"][action]["to hit"])
         attack ={"attack name":action, "dice":dice, "to hit":to_hit}
         result.append(attack)
     return result
 
 def roll_the_dice(dice:str):
+    #To do: make it read any kind of dice combination
+    "rolls dice based on json discription"
     if dice=="1d8+2":
         return random.randint(1,8)+2
     elif dice=="2d8+3":
@@ -95,36 +103,39 @@ def roll_the_dice(dice:str):
     else:
         raise Exception("No dice for"+dice)
     
-def compute_damage(a:dict):
-    dice=a["dice"]
+def compute_damage(attack:dict):
+    dice=attack["dice"]
     return roll_the_dice(dice)
 
     raise Exception("No attacks.")
 
-def find_opponent(monsters: list,me:dict):
+def find_opponent(monsters: list,current_monster:dict):
     for m in monsters:
-        if m ==me: continue
+        if m ==current_monster: continue
         return m
     raise Exception("No one to fight")
 
-def roll_for_initiative(m1:dict,m2:dict):    
+def roll_for_initiative(monster_1:dict,monster_2:dict):    
+    "calculates who goes first"
     while True:
-        m1["initiative"]=random.randint(1,20)
-        m2["initiative"]=random.randint(1,20)
+        monster_1["initiative"]=random.randint(1,20)
+        monster_2["initiative"]=random.randint(1,20)
 
-        if m1["initiative"]>m2["initiative"]:
-            return [m1,m2]
-        elif m1["initiative"]<m2["initiative"]:
-            return [m2,m1]
+        if monster_1["initiative"]>monster_2["initiative"]:
+            return [monster_1,monster_2]
+        elif monster_1["initiative"]<monster_2["initiative"]:
+            return [monster_2,monster_1]
 
 def order_text(n:int)->str:
+    "converts fight order into english"
     if n == 1:return "1st"
     if n == 2:return "2nd"
     raise Exception("unexpected number")
 
+#the main program:
+
 f=open("MonsterStats.json")
 text=f.read()
-import json
 monsters=json.loads(text)
 #print(monsters)
 
