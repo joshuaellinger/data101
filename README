@@ -1,7 +1,9 @@
-This project is for teaching Sam and his friends the basics of programming and data engineering.balls
-To see juan again
+This project is for teaching Sam and his friends the basics of programming and game development.
+
 D&D Monster files is sourced from https://docs.google.com/spreadsheets/d/1sccR7HgoHGB0Mq24k5K-O-tqJZG8D3Z66Ig7UloukNY/edit?pli=1&gid=2073157549#gid=2073157549
 
-I'm doing this course to learn programming and hang out with my boi Sam
-im just hoping i dont fail ap compsci next year
-Sam invited me and this seemed dope
+After show some basic data manipulation logic, we switched over to building a simple D&D 1-on-1 monster fight engine.
+
+To run it, run type "python LoadMonsters.py".  It reads the two monsters defined in MonsterStats.json and makes them fight until one is dead.
+
+Current implementaiton lacks critical hits, and saving throws.
