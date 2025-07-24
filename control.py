@@ -55,7 +55,7 @@ def example_loops():
     while True:
         print(i)
         i = i - 2
-        if i >= 0: break
+        if i <= 0: break
 
     # only print 5
     for i in range(0, 10):

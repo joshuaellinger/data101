@@ -18,10 +18,13 @@
         }
     },
     {
+
         "name": "Ruby",
         "title": "CAPCOM",
         "hours": [
             0,
+
+        
             4,
             3
         ],
