@@ -49,5 +49,30 @@
             "effect": null
         }
     }
+},{
+        "Name": "Gelatinous Cube",
+    "AC": 6,
+    "Hit Dice": "8d10+40",
+    "Stats": {
+        "Str": 14,
+        "Dex": 3,
+        "Con": 20,
+        "Int": 1,
+        "Wis": 6,
+        "Cha": 1
+    },
+    "Actions": {
+        "Multiattack": false,
+        "Pseudopod": {
+            "to hit": 4,
+            "base damage": "3d+6",
+            "effect": null
+        },
+        "Engulf":{
+            "base damage": "3d+6",
+            "effect": "restrained,6d6 at start of turn"
+           
+        }
+    }
 }
 ]
