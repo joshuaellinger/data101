@@ -69,7 +69,7 @@ def does_attack_hit(attack:dict,AC:int):
         return False
 
 def get_attacks(monster:dict):
-    "get attacks for the monsters"
+    "gets attacks for the monsters"
     result=[]
     has_multiattack= monster["Actions"]["Multiattack"]
     for action in monster["Actions"]:
@@ -84,6 +84,7 @@ def get_attacks(monster:dict):
 def roll_the_dice(dice:str):
     #To do: make it read any kind of dice combination
     "rolls dice based on json discription"
+    
     if dice=="1d8+2":
         return random.randint(1,8)+2
     elif dice=="2d8+3":
