@@ -22,17 +22,12 @@ def main():
     #print(df.columns)
 
     df = df[["Name", "Size", "Type", "Alignment", "CR", "Source"]]
-    #print(df.head(30).tail(10))
-    #print(df[20:30])
-    #print(df[-10:])
+    #print(df)
+    
     #example_1(df)
     #example_2(df)
-    #example_3(df)
-    df=df[df.Type=="Plant"]
-    df=df[df.Size=="Gargantuan"]
-    df_g=df[["Size"]].groupby("Size").size()
-    print(df)
-
+    example_3(df)
+    pass
 
 if __name__ == "__main__":
     main()
