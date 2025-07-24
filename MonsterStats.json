@@ -49,5 +49,27 @@
             "effect": null
         }
     }
+},
+{
+        "Name": "Terror Bird",
+    "AC": 12,
+    "Hit Dice": "10d8+20",
+    "Stats": {
+        "Str": 18,
+        "Dex": 12,
+        "Con": 14,
+        "Int": 3,
+        "Wis": 12,
+        "Cha": 10
+    },
+    "Actions": {
+        "Multiattack": false,
+        "Serrated Beak": {
+            "to hit": 6,
+            "reach": 10,
+            "base damage": "3d6+4",
+            "effect": "DC 12 save con or 2d6 at begining of next turn"
+        }
+    }
 }
 ]

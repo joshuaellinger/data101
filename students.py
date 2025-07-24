@@ -70,10 +70,19 @@ def main():
         students.append(s)
         print("added a new student", s["name"], "the", s["title"])
 
+    s = find_student_by_name(students, "Ruby")
+    if s == None:
+        s = make_a_new_student("Ruby", "CAPCOM", 10)
+        students.append(s)
+        print("added a new student", s["name"], "the", s["title"])
+
     print("")
     print("The students are:")
     for s in students:
-        print("  ", s["name"], "the", s["title"])
+        total=0
+        for hours in s["hours"]:
+            total=total+hours
+        print("  ", s["name"], "the", s["title"],"has", total, "hours")
 
     save_students(students)
 
