@@ -22,11 +22,19 @@ def main():
     #print(df.columns)
 
     df = df[["Name", "Size", "Type", "Alignment", "CR", "Source"]]
-    #print(df)
+    df=df[df.Type=="Monstrosity"]
+    df=df[df.CR=="4"]
+
+    df_g = df[["CR"]].groupby ("CR").size()
     
+    print(df)
+
+    #print(df.head(30).tail(10))
+    #print(df[20:30])
+    #print(df[-10:])
     #example_1(df)
     #example_2(df)
-    example_3(df)
+    #example_3(df)
     pass
 
 if __name__ == "__main__":
