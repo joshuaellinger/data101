@@ -8,11 +8,16 @@ pd.set_option("display.width", 256)
 def list_types():
 
     conn = sqlite3.connect('monsters.db')
+    #conn.execute("update monsters set cr='0.5' where cr='1/2'")
+    #conn.execute("update monsters set cr='0.125' where cr='1/8'")
+    # conn.execute("update monsters set cr='0.25' where cr='1/4'")
+    #conn.commit()
     cur = conn.execute("""
-select Type, count(*) as Cnt
+select Type,cr, count(*) as Cnt
 from monsters 
-group by Type
-order by Type
+where type='Plant'
+group by Type,cr
+order by Type,cast(cr as number)
 """)
     df = pd.DataFrame(cur, columns=[x[0] for x in cur.description])
     print(df)
@@ -33,4 +38,4 @@ order by CR desc
 
 if __name__ == "__main__":
     list_types()    
-    list_dragons()
+    #list_dragons()
