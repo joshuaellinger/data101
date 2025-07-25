@@ -70,15 +70,52 @@ def main():
         students.append(s)
         print("added a new student", s["name"], "the", s["title"])
 
+    s = find_student_by_name(students, "Amelia")
+    if s == None:
+        s = make_a_new_student("Amelia", "Bedilia",2)
+        s["hours"].append(4)
+        s["hours"].append(3)        
+        students.append(s)
+        print("added a new student", s["name"], "the", s["title"])
+
     print("")
     print("The students are:")
     for s in students:
-        print("  ", s["name"], "the", s["title"])
+
+        # get the name and title into variables
+        s_name, s_title = s["name"], s["title"]
+
+        # compute the total hours from the hours list
+        total_hours = 0
+        for h in s["hours"]:
+            total_hours += h
+        
+        # convert the list of hours into a list of strings
+        hours_as_strs = [str(x) for x in s["hours"]]
+        #print(hours_as_strs)
+
+        # use a formated strings (f-string) to combine the name and the title
+        full_name = f"{s_name} the {s_title}"
+
+        # add extra spaces on the end so it is all the same length
+        full_name_padded = full_name.ljust(25)
+
+        if len(hours_as_strs) > 1:      
+            # use a string function to join a the hours together
+            # with a plus sign between them
+            formated_hours_list = "+".join(hours_as_strs)
+
+            print("  ", full_name_padded, ":",
+                formated_hours_list, "=",
+                total_hours, "hours.")
+        else:
+            print("  ", full_name_padded, ":",
+                total_hours, "hours.")
 
     save_students(students)
 
     print()
-    print("ROUND 2 - CODE")
+    print("ROUND 3 - CODE")
 
 
 

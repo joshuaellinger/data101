@@ -1,3 +1,21 @@
+#
+# Sam:
+#
+#  Look at Amelia's GUI_Events.py implementation and then start changing the engine implementation
+#  to use custom classes, instead of dict.
+#
+#  1. Create a Monster class
+#        -- copy the data from the dict into the Monster class
+#        -- make sure the rest of the code works on Monster class, not dict
+#  2. Create a stub MonsterEvent class
+#        -- it should have a single method called print that prints it arguments
+#        -- all your print statements should route through this class 
+#  3. Create a Fight Class
+#        -- this should have the two monsters and an instance of the MonsterEvent class
+#        -- this is the top level class that Ruby will call
+#
+#                             Josh
+
 #To do: Crits, Saving throws, Additional effects
 
 import random
