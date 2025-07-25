@@ -1,9 +1,19 @@
 This project is for teaching Sam and his friends the basics of programming and game development.
 
+RESOURCES:
+
 D&D Monster files is sourced from https://docs.google.com/spreadsheets/d/1sccR7HgoHGB0Mq24k5K-O-tqJZG8D3Z66Ig7UloukNY/edit?pli=1&gid=2073157549#gid=2073157549
 
-After show some basic data manipulation logic, we switched over to building a simple D&D 1-on-1 monster fight engine.
+To learn more python syntax, look at https://automatetheboringstuff.com/#toc
 
-To run it, run type "python LoadMonsters.py".  It reads the two monsters defined in MonsterStats.json and makes them fight until one is dead.
+For pygame (the GUI platform), look at https://www.pygame.org/docs/
 
-Current implementaiton lacks critical hits, and saving throws.
+CODE:
+
+1. Sam's main monster fight is in LoadMonsters.py.  To run it, run type "python LoadMonsters.py".  It reads the two monsters defined in MonsterStats.json and makes them fight until one is dead.
+
+2. Amelia's gui first-steps is GUI_Events.py.  This is just the start of a description of what the GUI needs from the engine to run.  It will eventually be replaced by a pygame mail loop.
+
+3. Ruby's fight management codes is fight_setup.py.  This is just a placeholder with instructions about what she needs do to get ready to run a fight.
+
+4. Josh's tracking logic is in students.py.  This is where I am show new python stuff under the guise of 'taking attendence'. 
