@@ -84,25 +84,13 @@ def get_attacks(monster:dict):
 def roll_the_dice(dice:str):
     #To do: make it read any kind of dice combination
     "rolls dice based on json discription"
-    
-    if dice=="1d8+2":
-        return random.randint(1,8)+2
-    elif dice=="2d8+3":
-        return random.randint(1,8)+random.randint(1,8)+3
-    elif dice=="2d10":
-        return random.randint(1,10)+random.randint(1,10)
-    elif dice=="7d10+14":
-        x=14
-        for idx in range(7):
-            x=x+random.randint(1,10)
-        return x
-    elif dice=="11d8+22":
-        x=22
-        for idx in range(11):
-            x=x+random.randint(1,8)
-        return x
-    else:
-        raise Exception("No dice for"+dice)
+    dmgmod=dice.split("d")[1].split("+")[1]
+    dmgdice=dice.split("d")[1].split("+")[0]
+    rollamount=dice.split("d")[0]
+    totaldmg=int(dmgmod)
+    for idx in range(int(rollamount)):
+        totaldmg=totaldmg+random.randint(1,int(dmgdice))
+    return totaldmg
     
 def compute_damage(attack:dict):
     dice=attack["dice"]
