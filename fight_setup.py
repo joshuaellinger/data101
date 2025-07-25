@@ -1,15 +1,19 @@
 # 
-# Simplest Fight Setup (for Ruby)
-# 
+# Ruby -- Make the simplest possible fight setup
+#  
 #  To run a fight, we want to:
 #     1. print the monster list.
 #     2. have player 1 pick a monster
 #     2. have player 2 pick a monster
 #     3. if the monsters are the same, refuse to fight and ask them both to pick new monsters
 #     4. call Sam's game engine
-#     4. print the winner
+#     5. print the winner
 #
-#  For initial development, we are going to simulate/mock the engine
+#  For initial development, use the 'mock' run_a_fight functio below so you don't need
+#  to access Sam or Amelia's code.
+#
+#                           Josh
+#
 
 def load_monster_names():
     

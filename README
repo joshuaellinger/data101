@@ -6,7 +6,8 @@ D&D Monster files is sourced from https://docs.google.com/spreadsheets/d/1sccR7H
 
 To learn more python syntax, look at https://automatetheboringstuff.com/#toc
 
-For pygame (the GUI platform), look at https://www.pygame.org/docs/
+For pygame (the GUI platform), look at https://realpython.com/pygame-a-primer/ and
+   https://www.pygame.org/docs/
 
 CODE:
 
@@ -17,3 +18,7 @@ CODE:
 3. Ruby's fight management codes is fight_setup.py.  This is just a placeholder with instructions about what she needs do to get ready to run a fight.
 
 4. Josh's tracking logic is in students.py.  This is where I am show new python stuff under the guise of 'taking attendence'. 
+
+5. Josh's pygame samples are in code_examples/pygame_hello_world.py.  To run them:
+    pip install pygame
+    python/python3 ./code_examples/pygame_hello_world.py
