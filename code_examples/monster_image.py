@@ -9,6 +9,8 @@ def generate_monster_image(monster_name: str):
     #    2. type in '<monster name> monster'.  Adding the extra word monster makes it
     #    look a lot more like a monster
     #    3. save the image to a file
+    #    4. copy it to the images folder
+    #
     r = requests.post(
         "https://api.deepai.org/api/text2img",
         data={
