@@ -117,9 +117,8 @@ def sample_scrolling_text():
 
 
 def main():
-    #draw_a_circle()
-    #draw_text()
-    #sample_pymenu()
-    pass
-
+    draw_a_circle()
+    draw_text()
+    sample_pymenu()
+    
 main()
