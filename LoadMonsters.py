@@ -23,15 +23,30 @@ import json
 from typing import List
 
 class Attack:
-    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str):
+    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str):
         self.action = action
         self.dice = dice
         self.to_hit = to_hit
         self.attack_name = attack_name
+        self.damage_type = damage_type
 
-    def compute_damage(self):
-        dice=self.dice
-        return roll_the_dice(dice)
+    def compute_damage(self,ivr:dict)->int:
+
+        x=roll_the_dice(self.dice)
+        if self.damage_type in ivr:
+            val=ivr[self.damage_type]
+            if val=="immune":
+                print("*What?*")
+                x=0
+            elif val=="resists":
+                print("*Shrug*")
+                x=x//2
+            elif val=="vulnerable":
+                print("*Ouch*")
+                x=x*2
+            else:
+                raise Exception("invalid value "+val)
+        return x
     
     def does_attack_hit(self,AC:int):
         "attacks hit or miss (rolling a d20)"
@@ -45,7 +60,17 @@ class Attack:
             return True
         else:
             return False
-
+        
+def parse_irv(data:dict,name:str):
+    if not(name in data):
+        return []
+    x=data[name]
+    if x==None:
+        return []
+    if type(x)==str:
+        return [x]
+    else:
+        return x
 
 class Monster:
     def __init__(self,data:dict):
@@ -55,20 +80,41 @@ class Monster:
         self.hp = 0
         self.actions = data["Actions"]
         self.ac = data["AC"]
+        self.multiattack = False
+
+        self.ivr = {}
+        for x in parse_irv(data,"Immunities"):
+            self.ivr[x]="immune"
+        for x in parse_irv(data,"Resistances"):
+            if x in self.ivr:
+                raise Exception(f"{self.name} is already immune to {x}")
+            self.ivr[x]="resists"
+        for x in parse_irv(data,"Vulnerabilities"):
+            if x in self.ivr:
+                raise Exception(f"{self.name} is already immune or resistant to {x}")
+            self.ivr[x]="vulnerable"
+
         print(f"create new monster named {self.name}")
         
     def get_attacks(self)->List[Attack]:
         "gets attacks for the monsters"
         result=[]
-        has_multiattack= self.actions["Multiattack"]
-        for action in self.actions:
-            if action=="Multiattack":
+        for action_name in self.actions:
+            data=self.actions[action_name]
+            if action_name=="Multiattack":
+                self.multiattack = data
                 continue
-            dice=(self.actions[action]["base damage"])
-            to_hit=(self.actions[action]["to hit"])
-            attack =Attack(action,dice,to_hit, action)
+            dice=data["base damage"]
+            to_hit=data["to hit"]
+            damage_type=data["damage type"] if "damage type" in data else None
+            attack =Attack(action_name,dice,to_hit, action_name,damage_type)
             result.append(attack)
-        return result
+        
+        if self.multiattack:
+            return result
+        else:
+            n=random.randint(0,len(result)-1)
+            return [result[n]]
 
 
 def run_a_fight(monsters:List[Monster]):
@@ -105,7 +151,7 @@ def run_a_fight(monsters:List[Monster]):
         print("Both die.")
     print()
 
-def run_a_round(fight_order:list):
+def run_a_round(fight_order:List[Monster]):
     "fight a single round"
     for m_active in fight_order:
         m_opponent=find_opponent(fight_order, m_active)
@@ -114,10 +160,10 @@ def run_a_round(fight_order:list):
         for a in attacks:
             print(m_active.name, "uses", a.attack_name)
             if a.does_attack_hit(m_opponent.ac):
-
-                dmg=a.compute_damage()
+                dmg=a.compute_damage(m_opponent.ivr)
                 m_opponent.hp=m_opponent.hp-dmg
-                print(m_opponent.name, "takes", dmg, "damage.", m_opponent.name, "has", m_opponent.hp, "HP left.")
+                if dmg== 0:dmg="no"
+                print(m_opponent.name, "takes", dmg, a.damage_type, "damage.", m_opponent.name, "has", m_opponent.hp, "HP left.")
                 if m_opponent.hp<=0:
                     return
             else:
