@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Checkout
       run: |
             python3 -m pip install pygbag
@@ -17,5 +17,5 @@ jobs:
     - name : "Upload to GitHub pages"
       uses: JamesIves/github-pages-deploy-action@4.1.7
       with:
-        branch: main
-        folder: data101/browser/build/web
+        branch: gh-pages
+        folder: browser/build/web
