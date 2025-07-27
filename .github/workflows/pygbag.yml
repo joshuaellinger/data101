@@ -13,9 +13,10 @@ jobs:
       run: |
             python3 -m pip install pygbag
             python3 -m pygbag --build $GITHUB_WORKSPACE/browser/main.py
+            ls $GITHUB_WORKSPACE/browser
 
     - name : "Upload to GitHub pages"
       uses: JamesIves/github-pages-deploy-action@4.1.7
       with:
-        branch: gh-pages
+        branch: main
         folder: data101/browser/build/web
