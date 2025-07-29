@@ -4,7 +4,6 @@ import pygame
 from pygame.locals import *
 import time
 
-
 def draw_a_circle():
     print("example #2: draw a circle")
     # example from https://realpython.com/pygame-a-primer/#basic-pygame-program
@@ -86,39 +85,46 @@ def draw_text():
 
     pygame.quit()    
 
-def sample_pymenu():
-    # pygame-menu - https://pygame-menu.readthedocs.io/en/latest/    
 
-    import pygame_menu
+
+def draw_an_image():
+
+    print("draw an image")
+    BLUE = (0,0,255)
+    GRAY = (200, 200, 200)
 
     pygame.init()
-    surface = pygame.display.set_mode((600, 400))
- 
-    def set_difficulty(value, difficulty):
-        # Do the job here !
-        pass
+    screen = pygame.display.set_mode((800, 800))
 
-    def start_the_game():
-        # Do the job here !
-        pass
- 
-    menu = pygame_menu.Menu('Welcome', 400, 300,
-                        theme=pygame_menu.themes.THEME_BLUE)
+    img = pygame.image.load('../images/Giant Ant.jpg')
+    rect = img.get_rect()
+    pygame.draw.rect(img, BLUE, rect, 1)
 
-    menu.add.text_input('Name :', default='John Doe')
-    menu.add.selector('Difficulty :', [('Hard', 1), ('Easy', 2)], onchange=set_difficulty)
-    menu.add.button('Play', start_the_game)
-    menu.add.button('Quit', pygame_menu.events.EXIT)
+    running = True
+    background = GRAY
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            if event.type == KEYDOWN:
+                key = event.dict["key"]
+                if key == K_z :
+                    img = pygame.transform.smoothscale_by(img, 0.5)
+                elif key == K_x:
+                    img = pygame.transform.smoothscale_by(img, 2.0)
+                else:
+                    print("unknown key:", key)
 
-    menu.mainloop(surface)
+        screen.fill(background)
+        screen.blit(img, (10, 10))
+        pygame.display.update()
 
-def sample_scrolling_text():
-    pass
+    pygame.quit()    
 
 
 def main():
-    draw_a_circle()
-    draw_text()
-    sample_pymenu()
+    #draw_a_circle()
+    #draw_text()
+    draw_an_image()
     
 main()
