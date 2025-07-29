@@ -26,7 +26,7 @@ def draw_a_circle():
         screen.fill((255, 255, 255))
 
         # Draw a solid blue circle in the center
-        pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+        pygame.draw.circle(screen, (207, 6, 172), (250, 250), 75)
 
         # Flip the display
         pygame.display.flip()
@@ -55,15 +55,15 @@ def draw_text():
     font = pygame.font.SysFont(None, 48)
     print('time needed for Font creation :', time.time()-t0)
 
-    img = font.render(sysfont, True, RED)
+    img = font.render('hi sam', True, RED)
     rect = img.get_rect()
-    pygame.draw.rect(img, BLUE, rect, 1)
+    pygame.draw.rect(img, GREEN, rect, 1)
 
     font1 = pygame.font.SysFont('chalkduster.ttf', 72)
-    img1 = font1.render('chalkduster.ttf', True, BLUE)
+    img1 = font1.render('CAPCOM', True, BLUE)
 
     font2 = pygame.font.SysFont('didot.ttc', 72)
-    img2 = font2.render('didot.ttc', True, GREEN)
+    img2 = font2.render('Gooby Doodles', True, GREEN)
 
     fonts = pygame.font.get_fonts()
     print(len(fonts))
@@ -79,8 +79,8 @@ def draw_text():
 
         screen.fill(background)
         screen.blit(img, (20, 20))
-        screen.blit(img1, (20, 50))
-        screen.blit(img2, (20, 120))
+        screen.blit(img1, (70, 50))
+        screen.blit(img2, (30, 120))
         pygame.display.update()
 
     pygame.quit()    
@@ -96,12 +96,18 @@ def draw_an_image():
     pygame.init()
     screen = pygame.display.set_mode((800, 800))
 
-    img = pygame.image.load('../images/Giant Ant.jpg')
-    rect = img.get_rect()
-    pygame.draw.rect(img, BLUE, rect, 1)
+    images=[]
+    images.append( pygame.image.load('../images/Giant Ant.jpg'))
+    images.append( pygame.image.load('../images/Deep One.jpg'))
+    images.append( pygame.image.load('../images/Gelatinous Cube.jpg'))
+    for img in images:
+        rect=img.get_rect()
+        pygame.draw.rect(img, BLUE, rect, 1)
 
     running = True
     background = GRAY
+    scale = 0.25
+    offset=0
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -109,22 +115,30 @@ def draw_an_image():
             if event.type == KEYDOWN:
                 key = event.dict["key"]
                 if key == K_z :
-                    img = pygame.transform.smoothscale_by(img, 0.5)
+                    scale=scale*0.5
                 elif key == K_x:
-                    img = pygame.transform.smoothscale_by(img, 2.0)
+                    scale=scale*2.0
+                elif key == K_s: 
+                    offset+=10
+                elif key == K_a:
+                    offset-=10
                 else:
                     print("unknown key:", key)
 
+        x=10
         screen.fill(background)
-        screen.blit(img, (10, 10))
+        for idx in range(3):
+            img = pygame.transform.smoothscale_by(images[idx], scale)
+            screen.blit(img, (x+offset, 10))
+            x=x+img.get_rect().height+10
         pygame.display.update()
 
     pygame.quit()    
 
 
 def main():
-    draw_a_circle()
-    draw_text()
+    #draw_a_circle()
+    #draw_text()
     draw_an_image()
     
 main()
