@@ -1,75 +1,75 @@
 [
-{
-    "Name": "Giant Ant",
-    "AC": 14,
-    "Hit Dice": "7d10+14",
-    "Stats": {
-        "Str": 15,
-        "Dex": 13,
-        "Con": 15,
-        "Int": 1,
-        "Wis": 9,
-        "Cha": 2
-    },
-    "Actions": {
-        "Multiattack": true,
-        "Bite": {
-            "to hit": 4,
-            "base damage": "1d8+2",
-            "effect": "grapple"
+    {
+        "Name": "Giant Ant",
+        "AC": 14,
+        "Hit Dice": "7d10+14",
+        "Stats": {
+            "Str": 15,
+            "Dex": 13,
+            "Con": 15,
+            "Int": 1,
+            "Wis": 9,
+            "Cha": 2
         },
-        "Sting": {
-            "to hit": 4,
-            "base damage": "1d8+2",
-            "effect": {
-                "type": "poison",
-                "save": "DC 12",
-                "damage": "2d10"
+        "Actions": {
+            "Multiattack": true,
+            "Bite": {
+                "to hit": 4,
+                "base damage": "1d8+2",
+                "effect": "grapple"
+            },
+            "Sting": {
+                "to hit": 4,
+                "base damage": "1d8+2",
+                "effect": {
+                    "type": "poison",
+                    "save": "DC 12",
+                    "damage": "2d10"
+                }
+            }
+        }
+    },
+    {
+        "Name": "Deep One",
+        "AC": 13,
+        "Hit Dice": "11d8+22",
+        "Stats": {
+            "Str": 16,
+            "Dex": 12,
+            "Con": 14,
+            "Int": 10,
+            "Wis": 8,
+            "Cha": 12
+        },
+        "Actions": {
+            "Multiattack": false,
+            "Claws": {
+                "to hit": 5,
+                "base damage": "2d8+3",
+                "effect": null
+            }
+        }
+    },
+    {
+        "Name": "Terror Bird",
+        "AC": 12,
+        "Hit Dice": "10d8+20",
+        "Stats": {
+            "Str": 18,
+            "Dex": 12,
+            "Con": 14,
+            "Int": 3,
+            "Wis": 12,
+            "Cha": 10
+        },
+        "Actions": {
+            "Multiattack": false,
+            "Serrated Beak": {
+                "to hit": 6,
+                "reach": 10,
+                "base damage": "3d6+4",
+                "effect": "DC 12 save con or 2d6 at begining of next turn"
             }
         }
     }
-},
-{
-        "Name": "Deep One",
-    "AC": 13,
-    "Hit Dice": "11d8+22",
-    "Stats": {
-        "Str": 16,
-        "Dex": 12,
-        "Con": 14,
-        "Int": 10,
-        "Wis": 8,
-        "Cha": 12
-    },
-    "Actions": {
-        "Multiattack": false,
-        "Claws": {
-            "to hit": 5,
-            "base damage": "2d8+3",
-            "effect": null
-        }
-    }
-},
-{
-        "Name": "Terror Bird",
-    "AC": 12,
-    "Hit Dice": "10d8+20",
-    "Stats": {
-        "Str": 18,
-        "Dex": 12,
-        "Con": 14,
-        "Int": 3,
-        "Wis": 12,
-        "Cha": 10
-    },
-    "Actions": {
-        "Multiattack": false,
-        "Serrated Beak": {
-            "to hit": 6,
-            "reach": 10,
-            "base damage": "3d6+4",
-            "effect": "DC 12 save con or 2d6 at begining of next turn"
-        }
-    }
-}
 ]
