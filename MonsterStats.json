@@ -1,75 +1,105 @@
 [
-    {
-        "Name": "Giant Ant",
-        "AC": 14,
-        "Hit Dice": "7d10+14",
-        "Stats": {
-            "Str": 15,
-            "Dex": 13,
-            "Con": 15,
-            "Int": 1,
-            "Wis": 9,
-            "Cha": 2
-        },
-        "Actions": {
-            "Multiattack": true,
-            "Bite": {
-                "to hit": 4,
-                "base damage": "1d8+2",
-                "effect": "grapple"
-            },
-            "Sting": {
-                "to hit": 4,
-                "base damage": "1d8+2",
-                "effect": {
-                    "type": "poison",
-                    "save": "DC 12",
-                    "damage": "2d10"
-                }
-            }
-        }
+{
+    "Name": "Giant Ant",
+    "AC": 14,
+    "Hit Dice": "7d10+14",
+    "Movement": {"Speed":40},
+    "Stats": {
+        "Str": 15,
+        "Dex": 13,
+        "Con": 15,
+        "Int": 1,
+        "Wis": 9,
+        "Cha": 2
     },
-    {
-        "Name": "Deep One",
-        "AC": 13,
-        "Hit Dice": "11d8+22",
-        "Stats": {
-            "Str": 16,
-            "Dex": 12,
-            "Con": 14,
-            "Int": 10,
-            "Wis": 8,
-            "Cha": 12
-        },
-        "Actions": {
-            "Multiattack": false,
-            "Claws": {
-                "to hit": 5,
-                "base damage": "2d8+3",
-                "effect": null
-            }
-        }
+    "Saving Throws": null,
+    "Skills": null,
+    "Vulnerabilities": null,
+    "Resistances": null,
+    "Senses": {"blindsight": 60, "passive perception":9},
+    "Languages": null,
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": {
+        "Keen Smell": "has advantage on Wisdom(Perception) checks relying on smell"
     },
-    {
-        "Name": "Terror Bird",
-        "AC": 12,
-        "Hit Dice": "10d8+20",
-        "Stats": {
-            "Str": 18,
-            "Dex": 12,
-            "Con": 14,
-            "Int": 3,
-            "Wis": 12,
-            "Cha": 10
+    "Actions": {
+        "Multiattack": true,
+        "Bite": {
+            "to hit": 4,
+            "reach": 5,
+            "base damage": "1d8+2",
+            "effect": "grapple, escDC 12, Str; until grapple ends, target is Restrained"
         },
-        "Actions": {
-            "Multiattack": false,
-            "Serrated Beak": {
-                "to hit": 6,
-                "reach": 10,
-                "base damage": "3d6+4",
-                "effect": "DC 12 save con or 2d6 at begining of next turn"
+        "Sting": {
+            "to hit": 4,
+            "reach": 5,
+            "base damage": "1d8+2",
+            "effect": {
+                "type": "poison",
+                "save": "DC 12, Con; 1/2 damage if success",
+                "damage": "2d10"
             }
         }
     }
+},
+{
+        "Name": "Deep One",
+    "AC": 13,
+    "Hit Dice": "11d8+22",
+    "Movement": {"Speed": 30, "Swim": 30},
+    "Stats": {
+        "Str": 16,
+        "Dex": 12,
+        "Con": 14,
+        "Int": 10,
+        "Wis": 8,
+        "Cha": 12
+    },
+    "Saving Throws": {"Str":5, "Con":4, "Cha":3},
+    "Skills": null,
+    "Vulnerabilities": "fire",
+    "Resistances":"cold",
+    "Senses": {"darkvision": 120, "passive perception": 9},
+    "Languages": "Common, Void Speech",
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": {
+        "Amphibious": "can breath air and water",
+        "Frenzied Rage": "if 10 damage taken at once, has advantage with Claws, gets +2 to damage with Claws, until end of next turn"
+    },
+    "Actions": {
+        "Multiattack": false,
+        "Claws": {
+            "to hit": 5,
+            "base damage": "2d8+3",
+            "effect": null
+        }
+    }
+},{
+        "Name": "Gelatinous Cube",
+    "AC": 6,
+    "Hit Dice": "8d10+40",
+    "Stats": {
+        "Str": 14,
+        "Dex": 3,
+        "Con": 20,
+        "Int": 1,
+        "Wis": 6,
+        "Cha": 1
+    },
+    "Actions": {
+        "Multiattack": false,
+        "Pseudopod": {
+            "to hit": 4,
+            "base damage": "3d+6",
+            "effect": null
+        },
+        "Engulf":{
+            "base damage": "3d+6",
+            "effect": "restrained,6d6 at start of turn"
+           
+        }
+    }
+}
 ]

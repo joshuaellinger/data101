@@ -1,0 +1,6 @@
+pandas
+sqlalchemy
+pygame
+pygbag
+pygame-menu
+pygame-widgets
