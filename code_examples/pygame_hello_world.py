@@ -123,8 +123,8 @@ def draw_an_image():
 
 
 def main():
-    #draw_a_circle()
-    #draw_text()
+    draw_a_circle()
+    draw_text()
     draw_an_image()
     
 main()
