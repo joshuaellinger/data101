@@ -20,7 +20,7 @@
 
 import random
 import json
-from typing import List
+from typing import List, Union
 
 class Attack:
     def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str):
@@ -116,49 +116,42 @@ class Monster:
             n=random.randint(0,len(result)-1)
             return [result[n]]
 
+class GameEngine:
+    def __init__(self):
+        self.round_number=-1
+        self.fight_order:List[Monster]=[]
+        self.m_active:Monster=None
 
-def run_a_fight(monsters:List[Monster]):
-    "runs a fight between the first two monsters in the list until one is dead."
+    def get_monster_list(self)->List[Monster]:
+        return []
+    
+    def start_fight(self, monsters:List[Monster]):
+        m1=monsters[0]
+        m2=monsters[1]
+        print(m1.name, "vs.", m2.name)
 
-    m1=monsters[0]
-    m2=monsters[1]
-    print(m1.name, "vs.", m2.name)
+        self.fight_order=roll_for_initiative(m1,m2)
+        i=1
+        for m in self.fight_order:
+            print(m.name, "goes", order_text(i))
+            i=i+1
 
-    fight_order=roll_for_initiative(m1,m2)
-    i=1
-    for m in fight_order:
-        print(m.name, "goes", order_text(i))
-        i=i+1
+        m1.hp=roll_the_dice(m1.hit_dice)
+        print(m1.name, "has", m1.hp, "HP.")
+        m2.hp=roll_the_dice(m2.hit_dice)
+        print(m2.name, "has", m2.hp, "HP.")
+        self.round_number=1
 
-    m1.hp=roll_the_dice(m1.hit_dice)
-    print(m1.name, "has", m1.hp, "HP.")
-    m2.hp=roll_the_dice(m2.hit_dice)
-    print(m2.name, "has", m2.hp, "HP.")
-    Round_number=1
-    while m1.hp>0 and m2.hp>0:
-        print("=== Round",Round_number)
-        run_a_round(fight_order)
-        Round_number=Round_number+1
-        print()
+    def cancel_fight(self, monsters:List[Monster]):
+        self.round_number=-1
+        self.fight_order=[]
 
-    print()
-
-    if m1.hp>0:
-        print(m1.name, "wins with", m1.hp, "HP left!")
-    if m2.hp>0:
-        print(m2.name, "wins with", m2.hp, "HP left!")
-    if m1.hp<=0 and m2.hp<=0:
-        print("Both die.")
-    print()
-
-def run_a_round(fight_order:List[Monster]):
-    "fight a single round"
-    for m_active in fight_order:
-        m_opponent=find_opponent(fight_order, m_active)
-        print(m_active.name, "attacks", m_opponent.name)
-        attacks= m_active.get_attacks()
+    def next_action(self):
+        m_opponent=find_opponent(self.fight_order, self.m_active)
+        print(self.m_active.name, "attacks", m_opponent.name)
+        attacks= self.m_active.get_attacks()
         for a in attacks:
-            print(m_active.name, "uses", a.attack_name)
+            print(self.m_active.name, "uses", a.attack_name)
             if a.does_attack_hit(m_opponent.ac):
                 dmg=a.compute_damage(m_opponent.ivr)
                 m_opponent.hp=m_opponent.hp-dmg
@@ -167,7 +160,49 @@ def run_a_round(fight_order:List[Monster]):
                 if m_opponent.hp<=0:
                     return
             else:
-                print(m_active.name, "misses!")
+                print(self.m_active.name, "misses!")
+
+    def is_fight_over(self)->bool:
+        n_alive=0
+        for m in self.fight_order:
+            if m.hp>0:
+                n_alive+=1
+        return n_alive<=1
+    
+    def get_winner(self)->Union[Monster, None]:
+        for m in self.fight_order:
+            if m.hp>0:
+                return m
+        return None
+
+    
+
+def run_a_fight(monsters:List[Monster]):
+    "runs a fight between the first two monsters in the list until one is dead."
+
+    engine=GameEngine()
+    engine.start_fight(monsters)
+    
+    while not engine.is_fight_over():
+        print("=== Round",engine.round_number)
+        run_a_round(engine)
+        engine.round_number+=1
+        print()
+
+    print()
+
+    winner=engine.get_winner()
+    if winner != None:
+        print(winner.name, "wins with", winner.hp, "HP left!")
+    else:
+        print("Both die.")
+    print()
+
+def run_a_round(engine:GameEngine):
+    "fight a single round"
+    for m_active in engine.fight_order:
+        engine.m_active=m_active
+        engine.next_action()
 
 def roll_the_dice(dice:str):
     #To do: make it read any kind of dice combination
