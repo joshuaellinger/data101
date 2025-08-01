@@ -30,9 +30,8 @@ class Attack:
         self.attack_name = attack_name
         self.damage_type = damage_type
 
-    def compute_damage(self,ivr:dict)->int:
-
-        x=roll_the_dice(self.dice)
+    def compute_damage(self,ivr:dict, crit:bool)->int:
+        x=roll_the_dice(self.dice,crit)
         if self.damage_type in ivr:
             val=ivr[self.damage_type]
             if val=="immune":
@@ -53,13 +52,13 @@ class Attack:
         to_hit=self.to_hit
         x=random.randint(1,20)
         if x==1: #fumble
-            return False
+            return False, False
         if x==20: #crit
-            return True
+            return True, True
         if x+to_hit>=AC:
-            return True
+            return True, False
         else:
-            return False
+            return False, False
         
 def parse_irv(data:dict,name:str):
     if not(name in data):
@@ -136,9 +135,9 @@ class GameEngine:
             print(m.name, "goes", order_text(i))
             i=i+1
 
-        m1.hp=roll_the_dice(m1.hit_dice)
+        m1.hp=roll_the_dice(m1.hit_dice, False)
         print(m1.name, "has", m1.hp, "HP.")
-        m2.hp=roll_the_dice(m2.hit_dice)
+        m2.hp=roll_the_dice(m2.hit_dice, False)
         print(m2.name, "has", m2.hp, "HP.")
         self.round_number=1
 
@@ -152,15 +151,19 @@ class GameEngine:
         attacks= self.m_active.get_attacks()
         for a in attacks:
             print(self.m_active.name, "uses", a.attack_name)
-            if a.does_attack_hit(m_opponent.ac):
-                dmg=a.compute_damage(m_opponent.ivr)
+            hit, crit= a.does_attack_hit(m_opponent.ac)
+            if hit:
+                dmg=a.compute_damage(m_opponent.ivr,crit)
                 m_opponent.hp=m_opponent.hp-dmg
                 if dmg== 0:dmg="no"
-                print(m_opponent.name, "takes", dmg, a.damage_type, "damage.", m_opponent.name, "has", m_opponent.hp, "HP left.")
+                dt = "" if a.damage_type==None else " "+a.damage_type
+                print(f"{m_opponent.name} takes {dmg}{dt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
+                if crit==True: print("Boom!")
                 if m_opponent.hp<=0:
-                    return
+                    return False
             else:
                 print(self.m_active.name, "misses!")
+        return True
 
     def is_fight_over(self)->bool:
         n_alive=0
@@ -202,9 +205,12 @@ def run_a_round(engine:GameEngine):
     "fight a single round"
     for m_active in engine.fight_order:
         engine.m_active=m_active
-        engine.next_action()
+        c=engine.next_action()
+        if c==False:
+            break
 
-def roll_the_dice(dice:str):
+    
+def roll_the_dice(dice:str,crit:bool):
     #To do: make it read any kind of dice combination
     "rolls dice based on json discription"
     dmgmod=dice.split("d")[1].split("+")[1]
@@ -213,8 +219,10 @@ def roll_the_dice(dice:str):
     totaldmg=int(dmgmod)
     for idx in range(int(rollamount)):
         totaldmg=totaldmg+random.randint(1,int(dmgdice))
+    if crit:
+        totaldmg=totaldmg+(int(rollamount)*int(dmgdice))
     return totaldmg
-    
+
 def find_opponent(monsters: list,current_monster:dict):
     for m in monsters:
         if m ==current_monster: continue
