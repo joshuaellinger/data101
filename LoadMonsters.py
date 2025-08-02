@@ -23,12 +23,13 @@ import json
 from typing import List, Union
 
 class Attack:
-    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str):
+    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str, effects:dict):
         self.action = action
         self.dice = dice
         self.to_hit = to_hit
         self.attack_name = attack_name
         self.damage_type = damage_type
+        self.effects = effects
 
     def compute_damage(self,ivr:dict, crit:bool)->int:
         x=roll_the_dice(self.dice,crit)
@@ -47,6 +48,25 @@ class Attack:
                 raise Exception("invalid value "+val)
         return x
     
+    def apply_effects(self):
+        if self.attack_name=="Sting":
+            save=self.effects["save"]
+            damage=self.effects["damage"]
+            #print(save, damage)
+            parts=save.split(",")
+            #print(parts[0])
+            parts=parts[0].split(" ")
+            DC=int(parts[1])
+            x=roll_the_dice(damage, False)
+            if DC>random.randint(1,20):
+                print("Success against poison!")
+                x=x//2
+            else:
+                print("Failure against poison.")
+            print("Took", x, "poison damage.")
+            return x
+        return 0
+
     def does_attack_hit(self,AC:int):
         "attacks hit or miss (rolling a d20)"
         to_hit=self.to_hit
@@ -106,7 +126,8 @@ class Monster:
             dice=data["base damage"]
             to_hit=data["to hit"]
             damage_type=data["damage type"] if "damage type" in data else None
-            attack =Attack(action_name,dice,to_hit, action_name,damage_type)
+            effects=data["effect"] if "effect" in data else None
+            attack =Attack(action_name,dice,to_hit, action_name,damage_type, effects)
             result.append(attack)
         
         if self.multiattack:
@@ -154,6 +175,7 @@ class GameEngine:
             hit, crit= a.does_attack_hit(m_opponent.ac)
             if hit:
                 dmg=a.compute_damage(m_opponent.ivr,crit)
+                dmg+=a.apply_effects()
                 m_opponent.hp=m_opponent.hp-dmg
                 if dmg== 0:dmg="no"
                 dt = "" if a.damage_type==None else " "+a.damage_type
@@ -213,9 +235,12 @@ def run_a_round(engine:GameEngine):
 def roll_the_dice(dice:str,crit:bool):
     #To do: make it read any kind of dice combination
     "rolls dice based on json discription"
-    dmgmod=dice.split("d")[1].split("+")[1]
-    dmgdice=dice.split("d")[1].split("+")[0]
-    rollamount=dice.split("d")[0]
+
+    parts=dice.split("d")
+    parts2=parts[1].split("+")
+    dmgmod=parts2[1] if len(parts2)==2 else 0
+    dmgdice=parts2[0]
+    rollamount=parts[0]
     totaldmg=int(dmgmod)
     for idx in range(int(rollamount)):
         totaldmg=totaldmg+random.randint(1,int(dmgdice))
