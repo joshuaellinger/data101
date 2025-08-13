@@ -1,20 +1,3 @@
-#
-# Sam:
-#
-#  Look at Amelia's GUI_Events.py implementation and then start changing the engine implementation
-#  to use custom classes, instead of dict.
-#
-#  1. Create a Monster class
-#        -- copy the data from the dict into the Monster class
-#        -- make sure the rest of the code works on Monster class, not dict
-#  2. Create a stub MonsterEvent class
-#        -- it should have a single method called print that prints it arguments
-#        -- all your print statements should route through this class 
-#  3. Create a Fight Class
-#        -- this should have the two monsters and an instance of the MonsterEvent class
-#        -- this is the top level class that Ruby will call
-#
-#                             Josh
 
 #To do: Crits, Saving throws, Additional effects
 
@@ -22,27 +5,37 @@ import random
 import json
 from typing import List, Union
 
+
+class GameEvents:
+    def __init__(self):
+        pass
+    def print(self, msg:str=""):
+        print(msg)
+    def signal_start_of_round(self, round:int):
+        pass
+
 class Attack:
-    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str, effects:dict):
+    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str, effects:dict, events:GameEvents):
         self.action = action
         self.dice = dice
         self.to_hit = to_hit
         self.attack_name = attack_name
         self.damage_type = damage_type
         self.effects = effects
-
+        self.events=events
+        
     def compute_damage(self,ivr:dict, crit:bool)->int:
         x=roll_the_dice(self.dice,crit)
         if self.damage_type in ivr:
             val=ivr[self.damage_type]
             if val=="immune":
-                print("*What?*")
+                self.events.print("*What?*")
                 x=0
             elif val=="resists":
-                print("*Shrug*")
+                self.events.print("*Shrug*")
                 x=x//2
             elif val=="vulnerable":
-                print("*Ouch*")
+                self.events.print("*Ouch*")
                 x=x*2
             else:
                 raise Exception("invalid value "+val)
@@ -59,11 +52,11 @@ class Attack:
             DC=int(parts[1])
             x=roll_the_dice(damage, False)
             if DC>random.randint(1,20):
-                print("Success against poison!")
+                self.events.print("Success against poison!")
                 x=x//2
             else:
-                print("Failure against poison.")
-            print("Took", x, "poison damage.")
+                self.events.print("Failure against poison.")
+            self.events.print(f"Took {x} poison damage.")
             return x
         return 0
 
@@ -92,7 +85,7 @@ def parse_irv(data:dict,name:str):
         return x
 
 class Monster:
-    def __init__(self,data:dict):
+    def __init__(self,data:dict, events:GameEvents):
         self.name = data["Name"]
         self.initiative = 0
         self.hit_dice = data["Hit Dice"]
@@ -100,6 +93,7 @@ class Monster:
         self.actions = data["Actions"]
         self.ac = data["AC"]
         self.multiattack = False
+        self.events=events
 
         self.ivr = {}
         for x in parse_irv(data,"Immunities"):
@@ -127,7 +121,7 @@ class Monster:
             to_hit=data["to hit"]
             damage_type=data["damage type"] if "damage type" in data else None
             effects=data["effect"] if "effect" in data else None
-            attack =Attack(action_name,dice,to_hit, action_name,damage_type, effects)
+            attack =Attack(action_name,dice,to_hit, action_name,damage_type, effects, self.events)
             result.append(attack)
         
         if self.multiattack:
@@ -137,10 +131,12 @@ class Monster:
             return [result[n]]
 
 class GameEngine:
+
     def __init__(self):
         self.round_number=-1
         self.fight_order:List[Monster]=[]
         self.m_active:Monster=None
+        self.events=GameEvents()
 
     def get_monster_list(self)->List[Monster]:
         return []
@@ -148,18 +144,18 @@ class GameEngine:
     def start_fight(self, monsters:List[Monster]):
         m1=monsters[0]
         m2=monsters[1]
-        print(m1.name, "vs.", m2.name)
+        self.events.print(f"{m1.name} vs. {m2.name}")
 
         self.fight_order=roll_for_initiative(m1,m2)
         i=1
         for m in self.fight_order:
-            print(m.name, "goes", order_text(i))
+            self.events.print(f"{m.name} goes {order_text(i)}")
             i=i+1
 
         m1.hp=roll_the_dice(m1.hit_dice, False)
-        print(m1.name, "has", m1.hp, "HP.")
+        self.events.print(f"{m1.name} has {m1.hp} HP.")
         m2.hp=roll_the_dice(m2.hit_dice, False)
-        print(m2.name, "has", m2.hp, "HP.")
+        self.events.print(f"{m2.name} has {m2.hp} HP.")
         self.round_number=1
 
     def cancel_fight(self, monsters:List[Monster]):
@@ -168,10 +164,10 @@ class GameEngine:
 
     def next_action(self):
         m_opponent=find_opponent(self.fight_order, self.m_active)
-        print(self.m_active.name, "attacks", m_opponent.name)
+        self.events.print(f"{self.m_active.name} attacks {m_opponent.name}")
         attacks= self.m_active.get_attacks()
         for a in attacks:
-            print(self.m_active.name, "uses", a.attack_name)
+            self.events.print(f"{self.m_active.name} uses {a.attack_name}")
             hit, crit= a.does_attack_hit(m_opponent.ac)
             if hit:
                 dmg=a.compute_damage(m_opponent.ivr,crit)
@@ -179,12 +175,12 @@ class GameEngine:
                 m_opponent.hp=m_opponent.hp-dmg
                 if dmg== 0:dmg="no"
                 dt = "" if a.damage_type==None else " "+a.damage_type
-                print(f"{m_opponent.name} takes {dmg}{dt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
-                if crit==True: print("Boom!")
+                self.events.print(f"{m_opponent.name} takes {dmg}{dt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
+                if crit==True: self.events.print("Boom!")
                 if m_opponent.hp<=0:
                     return False
             else:
-                print(self.m_active.name, "misses!")
+                self.events.print(f"{self.m_active.name} misses!")
         return True
 
     def is_fight_over(self)->bool:
@@ -200,28 +196,27 @@ class GameEngine:
                 return m
         return None
 
-    
-
-def run_a_fight(monsters:List[Monster]):
+def run_a_fight(monsters:List[Monster], engine:GameEngine):
     "runs a fight between the first two monsters in the list until one is dead."
 
-    engine=GameEngine()
+    
     engine.start_fight(monsters)
     
     while not engine.is_fight_over():
-        print("=== Round",engine.round_number)
+        engine.events.signal_start_of_round(engine.round_number)
+        engine.events.print(f"=== Round {engine.round_number} ===")
         run_a_round(engine)
         engine.round_number+=1
-        print()
+        engine.events.print()
 
-    print()
+    engine.events.print()
 
     winner=engine.get_winner()
     if winner != None:
-        print(winner.name, "wins with", winner.hp, "HP left!")
+        engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
     else:
-        print("Both die.")
-    print()
+        engine.events.print("Both die.")
+    engine.events.print()
 
 def run_a_round(engine:GameEngine):
     "fight a single round"
@@ -272,14 +267,19 @@ def order_text(n:int)->str:
     raise Exception("unexpected number")
 
 #the main program:
+def main():
 
-f=open("MonsterStats.json")
-text=f.read()
-monsters=json.loads(text)
-#print(monsters)
-monsters = [Monster(m) for m in monsters]
-#print(monsters[2].name)
+    engine=GameEngine()
+    f=open("MonsterStats.json")
+    text=f.read()
+    monsters=json.loads(text)
+    #print(monsters)
+    monsters = [Monster(m,engine.events) for m in monsters]
+    #print(monsters[2].name)
 
-run_a_fight(monsters)
+    run_a_fight(monsters, engine)
 
-#run_a_fight(monsters)
+    #run_a_fight(monsters)
+
+if __name__=="__main__":
+    main()
