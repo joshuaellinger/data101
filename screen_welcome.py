@@ -6,6 +6,8 @@ import time
 
 from ui_label import Label
 
+SCREEN_SIZE=(1024,650)
+
 BLUE = (0, 0, 255)
 
 class TextBox:
@@ -44,7 +46,7 @@ def draw_text():
     GRAY = (200, 200, 200)
 
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode(SCREEN_SIZE)
 
     sysfont = pygame.font.get_default_font()
     #print('system font :', sysfont)
