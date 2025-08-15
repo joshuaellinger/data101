@@ -71,7 +71,7 @@ def draw_text():
     GRAY = (200, 200, 200)
 
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((1024, 650))
 
     sysfont = pygame.font.get_default_font()
     #print('system font :', sysfont)
@@ -83,14 +83,10 @@ def draw_text():
 
     #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
     text_box = TextBox(['Monster Select'])
-
     #font2 = pygame.font.SysFont('didot.ttc', 72)
     #img2 = font2.render('didot.ttc', True, GREEN)
 
     fonts = pygame.font.get_fonts()
-    print(len(fonts))
-    for i in range(7):
-        print(fonts[i])
 
     running = True
     background = GRAY
@@ -102,6 +98,10 @@ def draw_text():
                 text_box.add('abcdefg')
 
         screen.fill(background)
+        pygame.draw.rect(screen, RED,(500,50,100,100))
+        pygame.draw.rect(screen, RED,(650,150,100,100))
+        pygame.draw.rect(screen, RED,(800,250,100,100))
+        pygame.draw.rect(screen, RED,(950,350,100,100))
         text_box.blit(screen)
         pygame.display.update()
 
@@ -111,7 +111,8 @@ def draw_text():
 
 
 
-def main():
+def screen_monsterselect():
     draw_text()
     
-main()
+if __name__ =="__main__":
+    screen_monsterselect()
