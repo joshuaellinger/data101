@@ -18,10 +18,13 @@
         }
     },
     {
-        "name": "Amelia",
-        "title": "Bedilia",
+
+        "name": "Ruby",
+        "title": "CAPCOM",
         "hours": [
-            2,
+            0,
+
+        
             4,
             3
         ],

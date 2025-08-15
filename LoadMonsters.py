@@ -1,65 +1,77 @@
-#
-# Sam:
-#
-#  Look at Amelia's GUI_Events.py implementation and then start changing the engine implementation
-#  to use custom classes, instead of dict.
-#
-#  1. Create a Monster class
-#        -- copy the data from the dict into the Monster class
-#        -- make sure the rest of the code works on Monster class, not dict
-#  2. Create a stub MonsterEvent class
-#        -- it should have a single method called print that prints it arguments
-#        -- all your print statements should route through this class 
-#  3. Create a Fight Class
-#        -- this should have the two monsters and an instance of the MonsterEvent class
-#        -- this is the top level class that Ruby will call
-#
-#                             Josh
 
 #To do: Crits, Saving throws, Additional effects
 
 import random
 import json
-from typing import List
+from typing import List, Union
+
+
+class GameEvents:
+    def __init__(self):
+        pass
+    def print(self, msg:str=""):
+        print(msg)
+    def signal_start_of_round(self, round:int):
+        pass
 
 class Attack:
-    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str):
+    def __init__(self,action: str,dice: str,to_hit: int, attack_name: str,damage_type:str, effects:dict, events:GameEvents):
         self.action = action
         self.dice = dice
         self.to_hit = to_hit
         self.attack_name = attack_name
         self.damage_type = damage_type
-
-    def compute_damage(self,ivr:dict)->int:
-
-        x=roll_the_dice(self.dice)
+        self.effects = effects
+        self.events=events
+        
+    def compute_damage(self,ivr:dict, crit:bool)->int:
+        x=roll_the_dice(self.dice,crit)
         if self.damage_type in ivr:
             val=ivr[self.damage_type]
             if val=="immune":
-                print("*What?*")
+                self.events.print("*What?*")
                 x=0
             elif val=="resists":
-                print("*Shrug*")
+                self.events.print("*Shrug*")
                 x=x//2
             elif val=="vulnerable":
-                print("*Ouch*")
+                self.events.print("*Ouch*")
                 x=x*2
             else:
                 raise Exception("invalid value "+val)
         return x
     
+    def apply_effects(self):
+        if self.attack_name=="Sting":
+            save=self.effects["save"]
+            damage=self.effects["damage"]
+            #print(save, damage)
+            parts=save.split(",")
+            #print(parts[0])
+            parts=parts[0].split(" ")
+            DC=int(parts[1])
+            x=roll_the_dice(damage, False)
+            if DC>random.randint(1,20):
+                self.events.print("Success against poison!")
+                x=x//2
+            else:
+                self.events.print("Failure against poison.")
+            self.events.print(f"Took {x} poison damage.")
+            return x
+        return 0
+
     def does_attack_hit(self,AC:int):
         "attacks hit or miss (rolling a d20)"
         to_hit=self.to_hit
         x=random.randint(1,20)
         if x==1: #fumble
-            return False
+            return False, False
         if x==20: #crit
-            return True
+            return True, True
         if x+to_hit>=AC:
-            return True
+            return True, False
         else:
-            return False
+            return False, False
         
 def parse_irv(data:dict,name:str):
     if not(name in data):
@@ -73,7 +85,7 @@ def parse_irv(data:dict,name:str):
         return x
 
 class Monster:
-    def __init__(self,data:dict):
+    def __init__(self,data:dict, events:GameEvents):
         self.name = data["Name"]
         self.initiative = 0
         self.hit_dice = data["Hit Dice"]
@@ -81,6 +93,7 @@ class Monster:
         self.actions = data["Actions"]
         self.ac = data["AC"]
         self.multiattack = False
+        self.events=events
 
         self.ivr = {}
         for x in parse_irv(data,"Immunities"):
@@ -107,7 +120,8 @@ class Monster:
             dice=data["base damage"]
             to_hit=data["to hit"]
             damage_type=data["damage type"] if "damage type" in data else None
-            attack =Attack(action_name,dice,to_hit, action_name,damage_type)
+            effects=data["effect"] if "effect" in data else None
+            attack =Attack(action_name,dice,to_hit, action_name,damage_type, effects, self.events)
             result.append(attack)
         
         if self.multiattack:
@@ -116,70 +130,119 @@ class Monster:
             n=random.randint(0,len(result)-1)
             return [result[n]]
 
+class GameEngine:
 
-def run_a_fight(monsters:List[Monster]):
-    "runs a fight between the first two monsters in the list until one is dead."
+    def __init__(self):
+        self.round_number=-1
+        self.fight_order:List[Monster]=[]
+        self.m_active:Monster=None
+        self.events=GameEvents()
 
-    m1=monsters[0]
-    m2=monsters[1]
-    print(m1.name, "vs.", m2.name)
+    def get_monster_list(self)->List[Monster]:
+        return []
+    
+    def start_fight(self, monsters:List[Monster]):
+        m1=monsters[0]
+        m2=monsters[1]
+        self.events.print(f"{m1.name} vs. {m2.name}")
 
-    fight_order=roll_for_initiative(m1,m2)
-    i=1
-    for m in fight_order:
-        print(m.name, "goes", order_text(i))
-        i=i+1
+        self.fight_order=roll_for_initiative(m1,m2)
+        i=1
+        for m in self.fight_order:
+            self.events.print(f"{m.name} goes {order_text(i)}")
+            i=i+1
 
-    m1.hp=roll_the_dice(m1.hit_dice)
-    print(m1.name, "has", m1.hp, "HP.")
-    m2.hp=roll_the_dice(m2.hit_dice)
-    print(m2.name, "has", m2.hp, "HP.")
-    Round_number=1
-    while m1.hp>0 and m2.hp>0:
-        print("=== Round",Round_number)
-        run_a_round(fight_order)
-        Round_number=Round_number+1
-        print()
+        m1.hp=roll_the_dice(m1.hit_dice, False)
+        self.events.print(f"{m1.name} has {m1.hp} HP.")
+        m2.hp=roll_the_dice(m2.hit_dice, False)
+        self.events.print(f"{m2.name} has {m2.hp} HP.")
+        self.round_number=1
 
-    print()
+    def cancel_fight(self, monsters:List[Monster]):
+        self.round_number=-1
+        self.fight_order=[]
 
-    if m1.hp>0:
-        print(m1.name, "wins with", m1.hp, "HP left!")
-    if m2.hp>0:
-        print(m2.name, "wins with", m2.hp, "HP left!")
-    if m1.hp<=0 and m2.hp<=0:
-        print("Both die.")
-    print()
-
-def run_a_round(fight_order:List[Monster]):
-    "fight a single round"
-    for m_active in fight_order:
-        m_opponent=find_opponent(fight_order, m_active)
-        print(m_active.name, "attacks", m_opponent.name)
-        attacks= m_active.get_attacks()
+    def next_action(self):
+        m_opponent=find_opponent(self.fight_order, self.m_active)
+        self.events.print(f"{self.m_active.name} attacks {m_opponent.name}")
+        attacks= self.m_active.get_attacks()
         for a in attacks:
-            print(m_active.name, "uses", a.attack_name)
-            if a.does_attack_hit(m_opponent.ac):
-                dmg=a.compute_damage(m_opponent.ivr)
+            self.events.print(f"{self.m_active.name} uses {a.attack_name}")
+            hit, crit= a.does_attack_hit(m_opponent.ac)
+            if hit:
+                dmg=a.compute_damage(m_opponent.ivr,crit)
+                dmg+=a.apply_effects()
                 m_opponent.hp=m_opponent.hp-dmg
                 if dmg== 0:dmg="no"
-                print(m_opponent.name, "takes", dmg, a.damage_type, "damage.", m_opponent.name, "has", m_opponent.hp, "HP left.")
+                dt = "" if a.damage_type==None else " "+a.damage_type
+                self.events.print(f"{m_opponent.name} takes {dmg}{dt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
+                if crit==True: self.events.print("Boom!")
                 if m_opponent.hp<=0:
-                    return
+                    return False
             else:
-                print(m_active.name, "misses!")
+                self.events.print(f"{self.m_active.name} misses!")
+        return True
 
-def roll_the_dice(dice:str):
+    def is_fight_over(self)->bool:
+        n_alive=0
+        for m in self.fight_order:
+            if m.hp>0:
+                n_alive+=1
+        return n_alive<=1
+    
+    def get_winner(self)->Union[Monster, None]:
+        for m in self.fight_order:
+            if m.hp>0:
+                return m
+        return None
+
+def run_a_fight(monsters:List[Monster], engine:GameEngine):
+    "runs a fight between the first two monsters in the list until one is dead."
+
+    
+    engine.start_fight(monsters)
+    
+    while not engine.is_fight_over():
+        engine.events.signal_start_of_round(engine.round_number)
+        engine.events.print(f"=== Round {engine.round_number} ===")
+        run_a_round(engine)
+        engine.round_number+=1
+        engine.events.print()
+
+    engine.events.print()
+
+    winner=engine.get_winner()
+    if winner != None:
+        engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
+    else:
+        engine.events.print("Both die.")
+    engine.events.print()
+
+def run_a_round(engine:GameEngine):
+    "fight a single round"
+    for m_active in engine.fight_order:
+        engine.m_active=m_active
+        c=engine.next_action()
+        if c==False:
+            break
+
+    
+def roll_the_dice(dice:str,crit:bool):
     #To do: make it read any kind of dice combination
     "rolls dice based on json discription"
-    dmgmod=dice.split("d")[1].split("+")[1]
-    dmgdice=dice.split("d")[1].split("+")[0]
-    rollamount=dice.split("d")[0]
+
+    parts=dice.split("d")
+    parts2=parts[1].split("+")
+    dmgmod=parts2[1] if len(parts2)==2 else 0
+    dmgdice=parts2[0]
+    rollamount=parts[0]
     totaldmg=int(dmgmod)
     for idx in range(int(rollamount)):
         totaldmg=totaldmg+random.randint(1,int(dmgdice))
+    if crit:
+        totaldmg=totaldmg+(int(rollamount)*int(dmgdice))
     return totaldmg
-    
+
 def find_opponent(monsters: list,current_monster:dict):
     for m in monsters:
         if m ==current_monster: continue
@@ -204,14 +267,19 @@ def order_text(n:int)->str:
     raise Exception("unexpected number")
 
 #the main program:
+def main():
 
-f=open("MonsterStats.json")
-text=f.read()
-monsters=json.loads(text)
-#print(monsters)
-monsters = [Monster(m) for m in monsters]
-#print(monsters[2].name)
+    engine=GameEngine()
+    f=open("MonsterStats.json")
+    text=f.read()
+    monsters=json.loads(text)
+    #print(monsters)
+    monsters = [Monster(m,engine.events) for m in monsters]
+    #print(monsters[2].name)
 
-run_a_fight(monsters)
+    run_a_fight(monsters, engine)
 
-#run_a_fight(monsters)
+    #run_a_fight(monsters)
+
+if __name__=="__main__":
+    main()

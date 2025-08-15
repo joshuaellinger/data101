@@ -29,12 +29,14 @@
             "to hit": 4,
             "reach": 5,
             "base damage": "1d8+2",
+            "damage type": "piercing",
             "effect": "grapple, escDC 12, Str; until grapple ends, target is Restrained"
         },
         "Sting": {
             "to hit": 4,
             "reach": 5,
             "base damage": "1d8+2",
+            "damage type": "piercing",
             "effect": {
                 "type": "poison",
                 "save": "DC 12, Con; 1/2 damage if success",
@@ -73,6 +75,7 @@
         "Claws": {
             "to hit": 5,
             "base damage": "2d8+3",
+            "damage type": "slashing",
             "effect": null
         }
     }

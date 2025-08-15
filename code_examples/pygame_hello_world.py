@@ -4,7 +4,6 @@ import pygame
 from pygame.locals import *
 import time
 
-
 def draw_a_circle():
     print("example #2: draw a circle")
     # example from https://realpython.com/pygame-a-primer/#basic-pygame-program
@@ -27,7 +26,7 @@ def draw_a_circle():
         screen.fill((255, 255, 255))
 
         # Draw a solid blue circle in the center
-        pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+        pygame.draw.circle(screen, (207, 6, 172), (250, 250), 75)
 
         # Flip the display
         pygame.display.flip()
@@ -56,15 +55,15 @@ def draw_text():
     font = pygame.font.SysFont(None, 48)
     print('time needed for Font creation :', time.time()-t0)
 
-    img = font.render(sysfont, True, RED)
+    img = font.render('hi sam', True, RED)
     rect = img.get_rect()
-    pygame.draw.rect(img, BLUE, rect, 1)
+    pygame.draw.rect(img, GREEN, rect, 1)
 
     font1 = pygame.font.SysFont('chalkduster.ttf', 72)
-    img1 = font1.render('chalkduster.ttf', True, BLUE)
+    img1 = font1.render('CAPCOM', True, BLUE)
 
     font2 = pygame.font.SysFont('didot.ttc', 72)
-    img2 = font2.render('didot.ttc', True, GREEN)
+    img2 = font2.render('Gooby Doodles', True, GREEN)
 
     fonts = pygame.font.get_fonts()
     print(len(fonts))
@@ -80,45 +79,66 @@ def draw_text():
 
         screen.fill(background)
         screen.blit(img, (20, 20))
-        screen.blit(img1, (20, 50))
-        screen.blit(img2, (20, 120))
+        screen.blit(img1, (70, 50))
+        screen.blit(img2, (30, 120))
         pygame.display.update()
 
     pygame.quit()    
 
-def sample_pymenu():
-    # pygame-menu - https://pygame-menu.readthedocs.io/en/latest/    
 
-    import pygame_menu
+
+def draw_an_image():
+
+    print("draw an image")
+    BLUE = (0,0,255)
+    GRAY = (200, 200, 200)
 
     pygame.init()
-    surface = pygame.display.set_mode((600, 400))
- 
-    def set_difficulty(value, difficulty):
-        # Do the job here !
-        pass
+    screen = pygame.display.set_mode((800, 800))
 
-    def start_the_game():
-        # Do the job here !
-        pass
- 
-    menu = pygame_menu.Menu('Welcome', 400, 300,
-                        theme=pygame_menu.themes.THEME_BLUE)
+    images=[]
+    images.append( pygame.image.load('../images/Giant Ant.jpg'))
+    images.append( pygame.image.load('../images/Deep One.jpg'))
+    images.append( pygame.image.load('../images/Gelatinous Cube.jpg'))
+    for img in images:
+        rect=img.get_rect()
+        pygame.draw.rect(img, BLUE, rect, 1)
 
-    menu.add.text_input('Name :', default='John Doe')
-    menu.add.selector('Difficulty :', [('Hard', 1), ('Easy', 2)], onchange=set_difficulty)
-    menu.add.button('Play', start_the_game)
-    menu.add.button('Quit', pygame_menu.events.EXIT)
+    running = True
+    background = GRAY
+    scale = 0.25
+    offset=0
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            if event.type == KEYDOWN:
+                key = event.dict["key"]
+                if key == K_z :
+                    scale=scale*0.5
+                elif key == K_x:
+                    scale=scale*2.0
+                elif key == K_s: 
+                    offset+=10
+                elif key == K_a:
+                    offset-=10
+                else:
+                    print("unknown key:", key)
 
-    menu.mainloop(surface)
+        x=10
+        screen.fill(background)
+        for idx in range(3):
+            img = pygame.transform.smoothscale_by(images[idx], scale)
+            screen.blit(img, (x+offset, 10))
+            x=x+img.get_rect().height+10
+        pygame.display.update()
 
-def sample_scrolling_text():
-    pass
+    pygame.quit()    
 
 
 def main():
-    draw_a_circle()
-    draw_text()
-    sample_pymenu()
+    #draw_a_circle()
+    #draw_text()
+    draw_an_image()
     
 main()
