@@ -3,33 +3,12 @@
 import pygame
 from pygame.locals import *
 import time
+from ui_label import Label
 
+GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 
-class TextBox:
-    def __init__(self,messages):
-
-        #pass in how tall the screen is
-        #add lines of text til screen is full, scroll only when screen is full
-       
-        self.messages=messages
-        self.font = pygame.font.SysFont(None, 48)
-        self.images = []
-        for m in messages: 
-            self.images.append(self.font.render(m,True, BLUE))
-
-    def blit(self,screen):
-        n = 0
-        for x in self.images:
-            screen.blit(x,(20,50+50*n))
-            n=n+1
-    def add(self,message):
-        self.messages.pop(0)
-        self.messages.append(message)
-        self.images.pop(0)
-        self.images.append(self.font.render(message,True, BLUE))
-
-def draw_text():
+def game_loop():
     #print("example #2: draw text")
  
     # example from https://pygame.readthedocs.io/en/latest/4_text/text.html
@@ -38,7 +17,6 @@ def draw_text():
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
-    GRAY = (200, 200, 200)
 
     pygame.init()
     screen = pygame.display.set_mode((640, 480))
@@ -52,7 +30,7 @@ def draw_text():
     #print('time needed for Font creation :', time.time()-t0)
 
     #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
-    text_box = TextBox(['========= Monster Mash! ========='])
+    text_box = Label('====== Monster Mash! ======',(50,50,500,100))
 
     #font2 = pygame.font.SysFont('didot.ttc', 72)
     #img2 = font2.render('didot.ttc', True, GREEN)
@@ -72,7 +50,8 @@ def draw_text():
 
     pygame.quit()    
 
-def main():
-    draw_text()
+def screen_result():
+    game_loop()
     
-main()
+if __name__=="__main__":
+    screen_result()
