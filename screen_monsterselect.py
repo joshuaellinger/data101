@@ -98,10 +98,10 @@ def draw_text():
                 text_box.add('abcdefg')
 
         screen.fill(background)
-        pygame.draw.rect(screen, RED,(500,50,100,100))
-        pygame.draw.rect(screen, RED,(650,150,100,100))
-        pygame.draw.rect(screen, RED,(800,250,100,100))
-        pygame.draw.rect(screen, RED,(950,350,100,100))
+        for row in range(4):
+            for col in range(4):
+                pygame.draw.rect(screen, RED,(500+col*125,87.5+row*125,100,100))
+           
         text_box.blit(screen)
         pygame.display.update()
 
