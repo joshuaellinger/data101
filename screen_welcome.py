@@ -55,6 +55,8 @@ def draw_text():
     #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
     text_box = TextBox(['welcome!'])
 
+    
+
     #font2 = pygame.font.SysFont('didot.ttc', 72)
     #img2 = font2.render('didot.ttc', True, GREEN)
 
@@ -64,11 +66,10 @@ def draw_text():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            elif event.type==KEYDOWN:
-                text_box.add('abcdefg')
 
         screen.fill(background)
         text_box.blit(screen)
+        pygame.draw.rect(screen,RED,(100,50,200,100))
         pygame.display.update()
 
     pygame.quit()    
