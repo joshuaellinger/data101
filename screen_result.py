@@ -72,7 +72,8 @@ def draw_text():
 
     pygame.quit()    
 
-def main():
+def screen_result():
     draw_text()
     
-main()
+if __name__=="__name__":
+    screen_result()
