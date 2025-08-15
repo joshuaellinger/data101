@@ -82,7 +82,7 @@ def draw_text():
     #print('time needed for Font creation :', time.time()-t0)
 
     #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
-    text_box = TextBox(['screen 2'])
+    text_box = TextBox(['Monster Select'])
 
     #font2 = pygame.font.SysFont('didot.ttc', 72)
     #img2 = font2.render('didot.ttc', True, GREEN)
@@ -107,40 +107,11 @@ def draw_text():
 
     pygame.quit()    
 
-def sample_pymenu():
-    # pygame-menu - https://pygame-menu.readthedocs.io/en/latest/    
 
-    import pygame_menu
 
-    pygame.init()
-    surface = pygame.display.set_mode((600, 400))
- 
-    def set_difficulty(value, difficulty):
-        # Do the job here !
-        pass
-
-    def start_the_game():
-        # Do the job here !
-        pass
- 
-    menu = pygame_menu.Menu('Welcome', 400, 300,
-                        theme=pygame_menu.themes.THEME_BLUE)
-
-    menu.add.text_input('Name :', default='John Doe')
-    menu.add.selector('Difficulty :', [('Hard', 1), ('Easy', 2)], onchange=set_difficulty)
-    menu.add.button('Play', start_the_game)
-    menu.add.button('Quit', pygame_menu.events.EXIT)
-
-    menu.mainloop(surface)
-
-def sample_scrolling_text():
-    pass
 
 
 def main():
-    #draw_a_circle()
     draw_text()
-    #sample_pymenu()
-    #doesnt work
     
 main()
