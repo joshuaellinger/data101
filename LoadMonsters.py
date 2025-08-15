@@ -1,5 +1,9 @@
-
-#To do: Crits, Saving throws, Additional effects
+#Music:
+#1. Undertale start menu by Toby Fox
+#2. Rito village 8-bit by Loeder
+#3. Shriek and Ori 8-bit by CODE: Shadow | Compositions Remixes & Arrangements
+#4. Victory by Two steps from hell 1:53-3:13(please change if you find a better one; specifically stuff that's 8-bit/has synth)
+#To do: /Crits, /Saving throws, \Additional effects
 
 import random
 import json
