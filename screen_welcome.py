@@ -4,6 +4,8 @@ import pygame
 from pygame.locals import *
 import time
 
+from ui_label import Label
+
 BLUE = (0, 0, 255)
 
 class TextBox:
@@ -53,12 +55,13 @@ def draw_text():
     #print('time needed for Font creation :', time.time()-t0)
 
     #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
-    text_box = TextBox(['welcome!'])
 
     
 
     #font2 = pygame.font.SysFont('didot.ttc', 72)
     #img2 = font2.render('didot.ttc', True, GREEN)
+
+    rect1=Label("welcome!",(310,80,404,350))
 
     running = True
     background = GRAY
@@ -68,8 +71,9 @@ def draw_text():
                 running = False
 
         screen.fill(background)
-        text_box.blit(screen)
-        pygame.draw.rect(screen,RED,(100,50,200,100))
+
+        rect1.blit(screen)
+        
         pygame.display.update()
 
     pygame.quit()    
