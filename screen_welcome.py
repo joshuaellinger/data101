@@ -73,7 +73,8 @@ def draw_text():
 
     pygame.quit()    
 
-def main():
+def screen_welcome():
     draw_text()
     
-main()
+if __name__ == "__main__":
+    screen_welcome()
