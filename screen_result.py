@@ -19,7 +19,7 @@ def game_loop():
     BLUE = (0, 0, 255)
 
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((1048, 1048))
 
     sysfont = pygame.font.get_default_font()
     #print('system font :', sysfont)
