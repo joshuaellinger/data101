@@ -4,6 +4,8 @@ import pygame
 from pygame.locals import *
 import time
 
+SCREEN_SIZE=(1024,650)
+
 BLUE = (0, 0, 255)
 
 class TextBox:
@@ -41,7 +43,7 @@ def draw_text():
     GRAY = (200, 200, 200)
 
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode(SCREEN_SIZE)
 
     sysfont = pygame.font.get_default_font()
     #print('system font :', sysfont)
@@ -65,11 +67,14 @@ def draw_text():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            elif event.type==KEYDOWN:
-                text_box.add('abcdefg')
 
         screen.fill(background)
+        pygame.draw.rect(screen,BLACK,(30,30,250,590))
+        pygame.draw.rect(screen,BLACK,(744,30,250,590))
+        pygame.draw.rect(screen,BLACK,(310,225,404,395))
+
         text_box.blit(screen)
+        
         pygame.display.update()
 
     pygame.quit()    
