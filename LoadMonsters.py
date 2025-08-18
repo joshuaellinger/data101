@@ -7,7 +7,7 @@
 
 import random
 import json
-from typing import List, Union
+from typing import List, Union, Tuple
 
 
 class GameEvents:
@@ -28,7 +28,7 @@ class Attack:
         self.effects = effects
         self.events=events
         
-    def compute_damage(self,ivr:dict, crit:bool)->int:
+    def compute_damage(self,ivr:dict, crit:bool)->Tuple[int,str]:
         x=roll_the_dice(self.dice,crit)
         if self.damage_type in ivr:
             val=ivr[self.damage_type]
@@ -43,26 +43,27 @@ class Attack:
                 x=x*2
             else:
                 raise Exception("invalid value "+val)
-        return x
+        return x, " "+self.damage_type
     
-    def apply_effects(self):
+    def apply_effects(self)->Tuple[int,str,bool]:
         if self.attack_name=="Sting":
             save=self.effects["save"]
             damage=self.effects["damage"]
+            dt=self.effects["type"]
             #print(save, damage)
             parts=save.split(",")
             #print(parts[0])
             parts=parts[0].split(" ")
             DC=int(parts[1])
             x=roll_the_dice(damage, False)
-            if DC>random.randint(1,20):
-                self.events.print("Success against poison!")
+            s_f=DC<random.randint(1,20)
+            if s_f:
+                self.events.print(f"Success against {dt}!")
                 x=x//2
             else:
-                self.events.print("Failure against poison.")
-            self.events.print(f"Took {x} poison damage.")
-            return x
-        return 0
+                self.events.print(f"Failure against {dt}.")
+            return x, f" {dt}", s_f
+        return 0, " ", True
 
     def does_attack_hit(self,AC:int):
         "attacks hit or miss (rolling a d20)"
@@ -98,6 +99,7 @@ class Monster:
         self.ac = data["AC"]
         self.multiattack = False
         self.events=events
+        self.conditions={}
 
         self.ivr = {}
         for x in parse_irv(data,"Immunities"):
@@ -112,7 +114,16 @@ class Monster:
             self.ivr[x]="vulnerable"
 
         print(f"create new monster named {self.name}")
-        
+
+    def update_conditions(self):
+        for c in self.conditions.copy():
+            n=self.conditions[c]-1
+            if n > 0:
+                self.conditions[c]=n
+            else:
+                del self.conditions[c]
+                self.events.print(f"{self.name} is no longer {c}ed.")
+
     def get_attacks(self)->List[Attack]:
         "gets attacks for the monsters"
         result=[]
@@ -174,12 +185,17 @@ class GameEngine:
             self.events.print(f"{self.m_active.name} uses {a.attack_name}")
             hit, crit= a.does_attack_hit(m_opponent.ac)
             if hit:
-                dmg=a.compute_damage(m_opponent.ivr,crit)
-                dmg+=a.apply_effects()
-                m_opponent.hp=m_opponent.hp-dmg
-                if dmg== 0:dmg="no"
-                dt = "" if a.damage_type==None else " "+a.damage_type
-                self.events.print(f"{m_opponent.name} takes {dmg}{dt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
+                dmg1,dt1=a.compute_damage(m_opponent.ivr,crit)
+                dmg2,dt2,s_f=a.apply_effects()
+                if not s_f:
+                    if dt2.strip() in m_opponent.conditions:
+                        self.events.print(f"{m_opponent.name} was{dt2}ed!")
+                    m_opponent.conditions[dt2.strip()]=10
+                m_opponent.hp=m_opponent.hp-dmg1-dmg2
+                if dmg1+dmg2== 0: dmgtxt="no"
+                elif dmg2==0: dmgtxt=f"{dmg1}{dt1}" 
+                else: dmgtxt =f"{dmg1}{dt1} and {dmg2}{dt2}"
+                self.events.print(f"{m_opponent.name} takes {dmgtxt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
                 if crit==True: self.events.print("Boom!")
                 if m_opponent.hp<=0:
                     return False
@@ -226,6 +242,7 @@ def run_a_round(engine:GameEngine):
     "fight a single round"
     for m_active in engine.fight_order:
         engine.m_active=m_active
+        m_active.update_conditions()
         c=engine.next_action()
         if c==False:
             break
@@ -247,7 +264,7 @@ def roll_the_dice(dice:str,crit:bool):
         totaldmg=totaldmg+(int(rollamount)*int(dmgdice))
     return totaldmg
 
-def find_opponent(monsters: list,current_monster:dict):
+def find_opponent(monsters: list,current_monster:dict)->Monster:
     for m in monsters:
         if m ==current_monster: continue
         return m
