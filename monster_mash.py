@@ -5,7 +5,7 @@ from screen_result import screen_result
 
 def main():
     screen_welcome()
-    screen_monsterselect()
+    screen_monsterselect(True)
     screen_fight()
     screen_result()
 

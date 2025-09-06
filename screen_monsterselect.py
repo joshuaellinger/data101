@@ -6,60 +6,17 @@ import time
 
 BLUE = (0, 0, 255)
 
-class TextBox:
-    def __init__(self,messages):
+from ui_label import Label, is_point_in_rect
+monsters=[]
 
-        #pass in how tall the screen is
-        #add lines of text til screen is full, scroll only when screen is full
-       
-        self.messages=messages
-        self.font = pygame.font.SysFont(None, 48)
-        self.images = []
-        for m in messages: 
-            self.images.append(self.font.render(m,True, BLUE))
+def select_monster(pos):
+    for rows in monsters:
+        for m in rows:
+            if is_point_in_rect(pos,m.loc):
+                return m
+    return None
 
-    def blit(self,screen):
-        n = 0
-        for x in self.images:
-            screen.blit(x,(20,50+50*n))
-            n=n+1
-    def add(self,message):
-        self.messages.pop(0)
-        self.messages.append(message)
-        self.images.pop(0)
-        self.images.append(self.font.render(message,True, BLUE))
-
-def draw_a_circle():
-    print("example #2: draw a circle")
-    # example from https://realpython.com/pygame-a-primer/#basic-pygame-program
-
-    pygame.init()
-
-    # Set up the drawing window
-    screen = pygame.display.set_mode([500, 500])
-
-    # Run until the user asks to quit
-    running = True
-    while running:
-
-        # Did the user click the window close button?
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        # Fill the background with white
-        screen.fill((255, 255, 255))
-
-        # Draw a solid blue circle in the center
-        pygame.draw.circle(screen, (255, 0, 0), (250, 250), 75)
-
-        # Flip the display
-        pygame.display.flip()
-
-    # Done! Time to quit.
-    pygame.quit()
-
-def draw_text():
+def draw_text(is_started):
     #print("example #2: draw text")
  
     # example from https://pygame.readthedocs.io/en/latest/4_text/text.html
@@ -69,7 +26,7 @@ def draw_text():
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
     GRAY = (200, 200, 200)
-
+    #if not is_started:
     pygame.init()
     screen = pygame.display.set_mode((1024, 650))
 
@@ -82,27 +39,44 @@ def draw_text():
     #print('time needed for Font creation :', time.time()-t0)
 
     #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
-    text_box = TextBox(['Monster Select'])
     #font2 = pygame.font.SysFont('didot.ttc', 72)
     #img2 = font2.render('didot.ttc', True, GREEN)
 
     fonts = pygame.font.get_fonts()
-
+    for row in range(4):
+            monster_row=[]
+            for col in range(4):
+                x=Label(f"m{row}{col}",(500+col*125,87.5+row*125,100,100))
+                monster_row.append(x)
+            monsters.append(monster_row)
     running = True
     background = GRAY
+    monster_one=None
+    monster_two=None
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-            elif event.type==KEYDOWN:
-                text_box.add('abcdefg')
+
+            if event.type == MOUSEBUTTONDOWN: 
+                m=select_monster(event.pos)
+                if m!=None:
+                    if monster_one==None:
+                        print("selected "+m.msg)
+                        monster_one=m
+                    else:
+                        print("monster_two is "+m.msg)
+                        monster_two=m
+                        running = False
+
+            #elif event.type==KEYDOWN:
+                #text_box.add('abcdefg')
 
         screen.fill(background)
         for row in range(4):
             for col in range(4):
-                pygame.draw.rect(screen, RED,(500+col*125,87.5+row*125,100,100))
-           
-        text_box.blit(screen)
+                monsters[row][col].blit(screen)
+        
         pygame.display.update()
 
     pygame.quit()    
@@ -111,8 +85,8 @@ def draw_text():
 
 
 
-def screen_monsterselect():
-    draw_text()
+def screen_monsterselect(is_started):
+    draw_text(is_started)
     
 if __name__ =="__main__":
     screen_monsterselect()

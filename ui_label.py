@@ -6,6 +6,14 @@ DARK_GRAY = (150, 150, 150)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 
+def is_point_in_rect(pos,rect):
+    m_x,m_y=pos
+    x,y,w,h=rect
+    if m_x>x and m_x<x+w and m_y>y and m_y<y+h:
+        return True
+    
+    return False
+
 class Label:
     def __init__(self,msg:str,loc):
 

@@ -100,6 +100,7 @@ def draw_an_image():
     images.append( pygame.image.load('../images/Giant Ant.jpg'))
     images.append( pygame.image.load('../images/Deep One.jpg'))
     images.append( pygame.image.load('../images/Gelatinous Cube.jpg'))
+    images.append( pygame.image.load('../images/'))
     for img in images:
         rect=img.get_rect()
         pygame.draw.rect(img, BLUE, rect, 1)
