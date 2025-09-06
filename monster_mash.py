@@ -6,7 +6,7 @@ from screen_result import screen_result
 def main():
     screen_welcome()
     screen_monsterselect()
-    screen_fight()
+    screen_fight(True)
     screen_result()
 
 if __name__=="__main__":
