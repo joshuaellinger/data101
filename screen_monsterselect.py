@@ -6,13 +6,13 @@ import time
 
 BLUE = (0, 0, 255)
 
-from ui_label import Label, is_point_in_rect
+from ui_label import Label, is_point_in_rectangle
 monsters=[]
 
 def select_monster(pos):
     for rows in monsters:
         for m in rows:
-            if is_point_in_rect(pos,m.loc):
+            if is_point_in_rectangle(pos,m.loc):
                 return m
     return None
 

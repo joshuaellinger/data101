@@ -6,6 +6,13 @@ DARK_GRAY = (150, 150, 150)
 GRAY = (200, 200, 200)
 BLUE = (0, 0, 255)
 
+def is_point_in_rectangle(pos,rect):
+        m_x,m_y =pos
+        x,y,w,h =rect
+        if m_x>x and m_y>y and m_x<x+w and m_y<y+h:
+           return True     
+        return False
+
 class Label:
     def __init__(self,msg:str,loc):
 
@@ -16,7 +23,6 @@ class Label:
         self.msg=msg
         self.loc=loc
         self.font = pygame.font.SysFont(None, 48)
-        #
         self.image=pygame.Surface((loc[2],loc[3]))
         self.image.fill(DARK_GRAY)
         txt_image = self.font.render(msg,True, BLUE)
@@ -24,3 +30,5 @@ class Label:
 
     def blit(self,screen):
         screen.blit(self.image,self.loc)
+
+    

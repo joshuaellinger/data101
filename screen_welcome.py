@@ -4,7 +4,7 @@ import pygame
 from pygame.locals import *
 import time
 
-from ui_label import Label
+from ui_label import Label, is_point_in_rectangle
 
 SCREEN_SIZE=(1024,650)
 
@@ -34,7 +34,7 @@ class TextBox:
         self.images.append(self.font.render(message,True, BLUE))
 
 
-def draw_text():
+def draw_text(is_started):
     #print("example #2: draw text")
  
     # example from https://pygame.readthedocs.io/en/latest/4_text/text.html
@@ -45,7 +45,7 @@ def draw_text():
     BLUE = (0, 0, 255)
     GRAY = (200, 200, 200)
 
-    pygame.init()
+    if not is_started: pygame.init()
     screen = pygame.display.set_mode(SCREEN_SIZE)
 
     sysfont = pygame.font.get_default_font()
@@ -71,6 +71,10 @@ def draw_text():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            if event.type == MOUSEBUTTONDOWN:
+               # print(event.pos,rect1.loc)
+                if is_point_in_rectangle(event.pos,rect1.loc):
+                    running=False
 
         screen.fill(background)
 
@@ -81,7 +85,7 @@ def draw_text():
     pygame.quit()    
 
 def screen_welcome():
-    draw_text()
+    draw_text(is_started=False)
     
 if __name__ == "__main__":
     screen_welcome()

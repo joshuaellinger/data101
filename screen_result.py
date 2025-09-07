@@ -19,7 +19,7 @@ def game_loop():
     BLUE = (0, 0, 255)
 
     pygame.init()
-    screen = pygame.display.set_mode((1048, 1048))
+    screen = pygame.display.set_mode((640, 480))
 
     sysfont = pygame.font.get_default_font()
     #print('system font :', sysfont)
@@ -39,10 +39,10 @@ def game_loop():
     background = GRAY
     while running:
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == QUIT: 
                 running = False
-            elif event.type==KEYDOWN:
-                text_box.add('abcdefg')
+            if event.type == MOUSEBUTTONDOWN:
+                print(event)
 
         screen.fill(background)
         text_box.blit(screen)

@@ -4,7 +4,7 @@ import pygame
 from pygame.locals import *
 import time
 
-from ui_label import Label,is_point_in_rect
+from ui_label import Label,is_point_in_rectangle
 
 SCREEN_SIZE=(1024,650)
 
@@ -55,7 +55,7 @@ def draw_text(is_started):
             if event.type == QUIT:
                 running = False
             if event.type == MOUSEBUTTONDOWN:
-                if is_point_in_rect(event.pos,label_result.loc):
+                if is_point_in_rectangle(event.pos,label_result.loc):
                     running = False
                 #print(event.pos)
 
