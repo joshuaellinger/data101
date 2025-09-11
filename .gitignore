@@ -1,3 +1,5 @@
 Monsters.csv
 monsters.db
 *.pyc
+browser/build
+code_examples/build
