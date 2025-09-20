@@ -37,7 +37,7 @@ class ViewMonsterSelect(UI_View):
 
         buttonFight = UI_Button("buttonFight", (40,40+4*100,150,50), "Fight")
         def onclickFight(x: UI_Element):
-            host.select_new_view("view2")
+            host.select_new_view("viewFight")
         buttonFight.onclick = onclickFight
         self.add_element(buttonFight)
         buttonFight.enabled=False
@@ -91,7 +91,7 @@ class ViewMonsterSelect(UI_View):
 def screen_monsterselect():
     #draw_text(is_started)
     host=UI_Host()
-    host.register_view(ViewFight())
+    host.register_view(ViewMonsterSelect())
     host.run_game()
 if __name__ =="__main__":
     screen_monsterselect()
