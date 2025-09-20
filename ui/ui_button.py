@@ -37,12 +37,17 @@ class UI_Button(UI_Text):
 
         # wait 10 ticks before invoking onclick handler
         self._counter = 0
-        def debounce_handler(x: UI_Element):
+        def debounce_handler(event: pygame.event.Event):
             if self._counter == 0 and self._enabled:
                 self._counter = 10
                 self._changed = True
         self._onclick = debounce_handler
         self._onclick_external: UI_EventHandler = NoOp_EventHandler
+
+        def change_handler(event: pygame.event.Event):
+            self._changed = True
+        self._onenter = change_handler
+        self._onexit = change_handler
 
     @property
     def enabled(self) -> bool:

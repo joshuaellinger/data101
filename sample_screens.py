@@ -9,6 +9,7 @@ from typing import List
 from ui import *
 
 class View1(UI_View):
+    "display a screen to show progress bar, text, and button widgets"
     def __init__(self):
         super().__init__("view1", "Text/Button/Progress")
 
@@ -64,7 +65,10 @@ class View1(UI_View):
 
         super().tick()
 
+# ------------------------------------------------------------------
+
 class View2(UI_View):
+    "display a screen to show scrolling text widget"
     def __init__(self):
         super().__init__("view2", "ScrollingText")
 
@@ -110,7 +114,10 @@ class View2(UI_View):
 
         super().tick()
 
+
+# ------------------------------------------------------------------
 class View3(UI_View):
+    "display a screen to show image widgets"
     def __init__(self):
         super().__init__("view3", "Images")
 
@@ -155,6 +162,7 @@ class View3(UI_View):
     def tick(self):
         super().tick()
 
+# main loop for sample
 def main():
     host = UI_Host()
     host.register_view(View1())

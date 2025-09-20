@@ -1,4 +1,4 @@
-# UI_Image displays an image.
+# UI_ImageButton displays an image with click handling
 #
 
 import pygame
@@ -24,7 +24,7 @@ class UI_ImageButton(UI_Element):
 
         # wait 10 ticks before invoking onclick handler
         self._counter = 0
-        def debounce_handler(x: UI_Element):
+        def debounce_handler(event: pygame.event.Event):
             if self._counter == 0 and self._enabled:
                 self._counter = 10
                 self._changed = True
