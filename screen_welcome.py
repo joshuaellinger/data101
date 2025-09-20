@@ -7,7 +7,7 @@ from datetime import datetime
 class ViewWelcome(UI_View):
     "display a screen to show progress bar, text, and button widgets"
     def __init__(self):
-        super().__init__("view1", "Text/Button/Progress")
+        super().__init__("ViewWelcome", "Text/Button/Progress")
 
         self._last_time = datetime.now().time()
 
@@ -20,7 +20,7 @@ class ViewWelcome(UI_View):
         self.add_element(rect1)
         self.rect1 = rect1
         def onclickNext(x: UI_Text):
-            host.select_new_view("view2")
+            host.select_new_view("viewMonsterSelect")
         rect1.onclick = onclickNext
         
     def deactivate(self, host: UI_Host):
