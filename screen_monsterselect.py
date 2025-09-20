@@ -10,10 +10,10 @@ from datetime import datetime
 
 
 
-class ViewFight(UI_View):
+class ViewMonsterSelect(UI_View):
     "display a screen to show image widgets"
     def __init__(self):
-        super().__init__("viewFight", "Images")
+        super().__init__("viewMonsterSelect", "Images")
 
         self._last_time = datetime.now().time()
 
