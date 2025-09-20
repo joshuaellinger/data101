@@ -9,7 +9,7 @@ from ui import *
 class ViewFight(UI_View):
     "display a screen to show fight match, text, and button widgets"
     def __init__(self):
-        super().__init__("viewfight", "FIGHT!!!")
+        super().__init__("viewFight", "FIGHT!!!")
 
     def activate(self, host: UI_Host):
 
@@ -80,7 +80,7 @@ class ViewFight(UI_View):
 
         buttonNext = UI_Button("buttonNext", (527,550,187,70 ), "Next >>")
         def onclickNext(x: UI_Text):
-            host.select_new_view("view2")
+            host.select_new_view("viewResult")
         buttonNext.onclick = onclickNext
         self.add_element(buttonNext)
 
