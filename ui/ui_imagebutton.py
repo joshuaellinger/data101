@@ -31,6 +31,11 @@ class UI_ImageButton(UI_Element):
         self._onclick = debounce_handler
         self._onclick_external: UI_EventHandler = NoOp_EventHandler
 
+        def change_handler(event: pygame.event.Event):
+            self._changed = True
+        self._onenter = change_handler
+        self._onexit = change_handler
+
     @property
     def image(self) -> Background:
         return self.background
@@ -61,6 +66,7 @@ class UI_ImageButton(UI_Element):
             if self._counter == 0:
                 self._onclick_external(self)
                 self._changed = True
+        super().tick()
 
     def update(self, screen: pygame.Surface):
         if not self._changed: return
