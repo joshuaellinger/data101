@@ -73,8 +73,8 @@ class ViewFight(UI_View):
         buttonReset = UI_Button("buttonReset", (310,550,187,70), "Manual")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
         def onclick(x: UI_Text):
-            self.progress2.current = 20
-            self.progress2.color = BLUE
+            self.health1.current = 20
+            self.health1.color = BLUE
         buttonReset.onclick = onclick
         self.add_element(buttonReset)
 
