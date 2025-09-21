@@ -1,17 +1,16 @@
-from screen_welcome import screen_welcome
-from screen_monsterselect import screen_monsterselect
-from screen_fight import screen_fight
-from screen_result import screen_result
+from screen_welcome import ViewWelcome
+from screen_monsterselect import ViewMonsterSelect
+from screen_fight import ViewFight
+from screen_result import ViewResult
+from ui import UI_Host
 
 def main():
-    screen_welcome()
-
-    screen_monsterselect(True)
-
+    host = UI_Host()
+    host.register_view(ViewWelcome())
+    host.register_view(ViewMonsterSelect())
+    host.register_view(ViewFight())
+    host.register_view(ViewResult())
+    host.run_game()
     
-    screen_fight(True)
-    
-    screen_result()
-
 if __name__=="__main__":
     main()

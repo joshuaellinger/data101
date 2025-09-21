@@ -23,10 +23,14 @@ def create_surface(width: int, height: int, background: Background) -> pygame.Su
         surface = pygame.Surface((width, height))
         surface.fill(background)
     elif type(background) == str:
-        image = pygame.image.load(background)
-        r = image.get_rect()
-        scale_x, scale_y = width / r.width, height / r.height 
-        surface = pygame.transform.smoothscale_by(image, (scale_x, scale_y))
+        if background=="":
+            surface = pygame.Surface((width, height))
+            surface.fill(WHITE)
+        else:
+            image = pygame.image.load(background)
+            r = image.get_rect()
+            scale_x, scale_y = width / r.width, height / r.height 
+            surface = pygame.transform.smoothscale_by(image, (scale_x, scale_y))
     elif type(background) == pygame.Surface:
         r = background.get_rect()
         scale_x, scale_y = width / r.width, height / r.height 

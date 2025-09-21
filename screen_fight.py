@@ -3,78 +3,102 @@
 import pygame
 from pygame.locals import *
 import time
-
-from ui_label import Label,is_point_in_rectangle
-
-SCREEN_SIZE=(1024,650)
-
-BLUE = (0, 0, 255)
+from ui import *
 
 
-def draw_text(is_started):
-    #print("example #2: draw text")
- 
-    # example from https://pygame.readthedocs.io/en/latest/4_text/text.html
+class ViewFight(UI_View):
+    "display a screen to show fight match, text, and button widgets"
+    def __init__(self):
+        super().__init__("viewFight", "FIGHT!!!")
 
-    BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE = (0, 0, 255)
-    GRAY = (200, 200, 200)
+    def activate(self, host: UI_Host):
 
-    #if is_started == False:
-    pygame.init()
-    screen = pygame.display.set_mode(SCREEN_SIZE)
+        screen = host.screen
+        screen.fill(GRAY)
 
-    sysfont = pygame.font.get_default_font()
-    #print('system font :', sysfont)
+        #rect1=Label("monster 1",(30,30,250,590))
+        image1 = UI_Image("image1", (30,170,250,250), image="./images/Giant Ant.jpg")
+        self.add_element(image1)
+        self.image1 = image1
+        
+        name1 = UI_Text("name1", (30,40,250,100), text="Giant Ant")
+        self.add_element(name1)
+        self.name1 = name1
 
-    t0 = time.time()
-    #print(t0)
-    font = pygame.font.SysFont(None, 48)
-    #print('time needed for Font creation :', time.time()-t0)
+        health1 = UI_ProgressBar("health1", (30,450,250,40), current=10, maximum=30)
+        self.add_element(health1)
+        self.health1 = health1
 
-    #font1 = pygame.font.SysFont('chalkduster.ttf', 72)
+        stats1 = UI_Text("stats1", (30,490,250,40), text="-- / -- HP")
+        self.add_element(stats1)
+        self.stats1 = stats1
+        
+        #rect2=Label("monster 2",(744,30,250,590))
+        image2 = UI_Image("image2", (744,170,250,250), image="./images/Deep One.jpg")
+        self.add_element(image2)
+        self.rect2 = image2
 
-    #font2 = pygame.font.SysFont('didot.ttc', 72)
-    #img2 = font2.render('didot.ttc', True, GREEN)
+        name2 = UI_Text("name2", (744,40,250,100), text="Deep One")
+        self.add_element(name2)
+        self.name2 = name2
 
-    fonts = pygame.font.get_fonts()
+        health2 = UI_ProgressBar("health2", (744,450,250,40), current=10, maximum=30)
+        self.add_element(health2)
+        self.health2 = health2
 
-    rect1=Label("monster 1",(30,30,250,590))
-    rect2=Label("monster 2",(744,30,250,590))
-    rect3=Label("fight log",(310,180,404,350))
-    rect4=Label("     auto",(310,550,187,70))
-    label_result=Label("    result",(527,550,187,70))
-    #rect5=Label("Monster Mash!!!",(30,150,404,150))
-    #print(label_result.loc)
-    running = True
-    background = GRAY
-    while running:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                running = False
-            if event.type == MOUSEBUTTONDOWN:
-                if is_point_in_rectangle(event.pos,label_result.loc):
-                    running = False
-                #print(event.pos)
+        stats2 = UI_Text("stats2", (744,490,250,40), text="-- / -- HP")
+        self.add_element(stats2)
+        self.stats2 = stats2
+        
+        #rect3=Label("fight log",(310,180,404,350))
+        rect3 = UI_MultiLineText("rect3", (310,180,404,350))
+        rect3.add_line ("Fight")
+        rect3.add_line ("Log")
+        self.add_element(rect3)
+        self.rect3 = rect3
 
-        screen.fill(background)
+        title1 = UI_Text("title1", (310,55,404,110, ), text="Monster Mash!!!")
+        self.add_element(title1)
+        self.title1 = title1
+        
+        #rect4=Label("     auto",(310,550,187,70))
+        #rect4 = UI_Text("rect4", (310,550,187,70), text="     Auto")
+        #self.add_element(rect4)
+        #self.rect4 = rect4
 
-        rect1.blit(screen)
-        rect2.blit(screen)
-        rect3.blit(screen)
-        rect4.blit(screen)
-        label_result.blit(screen)
-        #rect5.blit(screen)
+        #label_result=Label("    result",(527,550,187,70))
 
         
-        pygame.display.update()
+        
+        buttonReset = UI_Button("buttonReset", (310,550,187,70), "Manual")
+        #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
+        def onclick(x: UI_Text):
+            self.progress2.current = 20
+            self.progress2.color = BLUE
+        buttonReset.onclick = onclick
+        self.add_element(buttonReset)
 
-    pygame.quit()    
+        buttonNext = UI_Button("buttonNext", (527,550,187,70 ), "Next >>")
+        def onclickNext(x: UI_Text):
+            host.select_new_view("viewResult")
+        buttonNext.onclick = onclickNext
+        self.add_element(buttonNext)
+
+    def deactivate(self, host: UI_Host):
+        self.clear_elements()
+
+    def tick(self):
+        super().tick()
+
+
 
 def screen_fight(is_started):
-    draw_text(is_started)
+    #draw_text(is_started)
+
+
+    host = UI_Host()
+    host.register_view(ViewFight())
+    host.run_game()
     
 if __name__ == "__main__":
     screen_fight(False)
