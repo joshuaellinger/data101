@@ -2,13 +2,14 @@
 
 from pygame.locals import *
 from ui import *
-from datetime import datetime    
+from datetime import datetime
+from game_engine import GameEngine    
 
 class ViewResult(UI_View):
     "display a screen to show progress bar, text, and button widgets"
-    def __init__(self):
+    def __init__(self, engine:GameEngine):
         super().__init__("viewResult", "Text/Button/Progress")
-
+        self.engine=engine
         self._last_time = datetime.now().time()
 
     def activate(self, host: UI_Host):

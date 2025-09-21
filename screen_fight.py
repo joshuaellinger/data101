@@ -4,11 +4,13 @@ import pygame
 from pygame.locals import *
 import time
 from ui import *
+from game_engine import GameEngine
 
 
 class ViewFight(UI_View):
     "display a screen to show fight match, text, and button widgets"
-    def __init__(self):
+    def __init__(self, engine:GameEngine):
+        self.engine=engine
         super().__init__("viewFight", "FIGHT!!!")
 
     def activate(self, host: UI_Host):
