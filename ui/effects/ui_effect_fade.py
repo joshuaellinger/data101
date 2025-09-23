@@ -1,5 +1,5 @@
 import pygame
-from pygame.surfarray import array3d, blit_array
+from pygame.surfarray import pixels3d, array3d, blit_array
 
 import numpy as np
 
@@ -45,10 +45,13 @@ class UI_Effect_Fade(UI_Effect):
     def update(self, surface: pygame.Surface):
         if not self.changed: return
 
-        pixels = array3d(surface)
-        x1, x2 = self._rect.left, self._rect.right
-        y1, y2 = self._rect.top, self._rect.bottom
-        pixels[x1:x2, y1:y2, :] = pixels[x1:x2, y1:y2, :].clip(self._min, self._max)
-        blit_array(surface, pixels)
+        image = surface.subsurface(self._rect)
+        pixels = pixels3d(image)
+        pixels.clip(self._min, self._max, out=pixels)
 
+        #pixels[:,:,0].clip(self._min, self._max, out=pixels[:,:,0])
+        #pixels = array3d(image)
+        #pixels.clip(self._min, self._max, out=pixels)
+        #blit_array(image, pixels)
+        
         self.changed = False
