@@ -87,7 +87,7 @@ class ViewFight(UI_View):
         self.add_element(buttonNext)
 
     def deactivate(self, host: UI_Host):
-        self.clear_elements()
+        self.clear()
 
     def tick(self):
         super().tick()

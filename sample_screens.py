@@ -50,7 +50,7 @@ class View1(UI_View):
         self.add_element(buttonNext)
 
     def deactivate(self, host: UI_Host):
-        self.clear_elements()
+        self.clear()
 
     def tick(self):
         # update the time every second
@@ -142,7 +142,6 @@ class View3(UI_View):
             tag = x.id.replace("button", "")
             text1.text = f"Selected {tag}"
             image1.image = x.background
-            self._fade = None
 
         buttonImageGiantAnt = UI_Button("buttonGiantAnt", (40,40,100,100), "", background="./images/Giant Ant.jpg")
         buttonImageGiantAnt.onclick = onclickSelect
@@ -150,7 +149,6 @@ class View3(UI_View):
         buttonImageDeepOne = UI_ImageButton("buttonDeepOne", (40,40+110,100,100), image="./images/Deep One.jpg")
         buttonImageDeepOne.onclick = onclickSelect
         self.add_element(buttonImageDeepOne)
-
 
         buttonBack = UI_Button("buttonBack", (40,40+3*100,150,50), "<< Back")
         def onclickBack(x: UI_Element):
@@ -160,17 +158,17 @@ class View3(UI_View):
 
         buttonFade = UI_Button("buttonFade", (40+200,40+3*100,150,50), "Fade")
         def onclickFade(x: UI_Element):
-            if self._fade is not None:
+            image1.border = 2
+            buttonFade.enabled = False
+
+            fader = UI_Effect_Fade(image1.rect.inflate(-4,-4))
+            def ondone(effect):
                 image1.border = 0
-                self._fade = None
-            else:
-                image1.border = 2
-                self._fade = UI_Effect_Fade(image1.rect.inflate(-4,-4))
-                def ondone(effect):
-                    image1.border = 0
-                    self.redraw()
-                    self._fade = None
-                self._fade.ondone = ondone
+                self.redraw()
+                buttonFade.enabled = True
+            fader.ondone = ondone
+            self.add_effect(fader)
+
         buttonFade.onclick = onclickFade
         self.add_element(buttonFade)
 
@@ -179,14 +177,10 @@ class View3(UI_View):
         pass
     
     def tick(self):
-        if self._fade: self._fade.tick()
         super().tick()
 
     def update(self, surface: pygame.Surface):        
-        if self._fade: 
-            self._fade.update(surface)
-        else:
-            super().update(surface)
+        super().update(surface)
 
 
 # main loop for sample

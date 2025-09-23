@@ -25,7 +25,7 @@ class ViewResult(UI_View):
         rect1.onclick = onclickNext
         
     def deactivate(self, host: UI_Host):
-        self.clear_elements()
+        self.clear()
 
     def tick(self):
         # update the time every second

@@ -4,7 +4,7 @@
 #
 # A game developer registers one or more views with it to handle displaying
 # different views without having to open new screens.  Each view has a list
-# of display elements (UI_Elements).
+# of display elements (UI_Elements) and effects (UI_Effect).
 #
 # A view has four primary methods that can be overwritten by the developer:
 #     1. activate - called when the screen is selected.
@@ -23,6 +23,8 @@
 # behavior for both process and update is to call it on each element but that
 # can be customized.
 #
+# Effects are added once then removed when completed.
+#
 # See sample_screens.py for an example
 #
 
@@ -34,6 +36,7 @@ from typing import List
 from abc import ABC, abstractmethod 
 
 from .ui_element import UI_Element
+from .effects.ui_effect import UI_Effect
 #import ui_timer
 
 pygame.init()
@@ -44,10 +47,18 @@ class UI_View(ABC):
         self.id = id
         self.caption = caption
         self._elements: List[UI_Element] = []
+        self._effects: List[UI_Effect] = []
 
-    def clear_elements(self):
+    def clear(self):
         self._elements.clear()
+        self._effects.clear()
 
+    def redraw(self):
+        for e in self._elements:
+            e.changed = True
+        self._effects.clear()
+
+    # elements
     def add_element(self, element: UI_Element):
         "add an element to a view"
         if element in self._elements:
@@ -62,9 +73,22 @@ class UI_View(ABC):
         "remove an element from a view"
         self._elements.remove(element)
 
-    def redraw(self):
-        for e in self._elements:
-            e.changed = True
+    # effects
+    def add_effect(self, effect: UI_Effect):
+        "add an effect to a view"
+        if effect in self._effects:
+            raise Exception(f"Effect {effect.id} is already in View {self.id}")
+        self._effects.append(effect)
+    
+    def index_element(self, effect: UI_Effect) -> int:
+        "index of an effect"
+        return self._effects.index(effect)
+        
+    def remove_effect(self, effect: UI_Effect):
+        "remove an effect from a view"
+        self._effects.remove(effect)
+
+    # actions
 
     @abstractmethod
     def activate(self, host: "UI_Host"):
@@ -84,13 +108,27 @@ class UI_View(ABC):
 
     def tick(self):
         "handle per-tick changes"
+
+        # remove completed effects
+        completed = []
+        for effect in self._effects:
+            if effect.done: completed.add(effect)
+        for effect in completed:
+            self._effects.remove_effect(effect)
+
+        # run tick actions
         for elem in self._elements:
             elem.tick()
+        for effect in self._effects:
+            effect.tick()
 
     def update(self, screen: pygame.Surface):
         "update the view"
+        
         for elem in self._elements:
             elem.update(screen)
+        for effect in self._effects:
+            effect.update(screen)
 
 
 class UI_Host:
