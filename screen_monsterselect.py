@@ -3,18 +3,17 @@
 import pygame
 from pygame.locals import *
 import time
-
 from ui import *
-
 from datetime import datetime
+from game_engine import GameEngine
 
 
 
 class ViewMonsterSelect(UI_View):
     "display a screen to show image widgets"
-    def __init__(self):
+    def __init__(self, engine:GameEngine):
         super().__init__("viewMonsterSelect", "Images")
-
+        self.engine=engine
         self._last_time = datetime.now().time()
 
     def activate(self, host: UI_Host):
@@ -45,24 +44,31 @@ class ViewMonsterSelect(UI_View):
         def onclickSelect(x: UI_Element):
             tag = x.id.replace("button", "")
             if text1.text=="":
-                text1.text = f"monster1: {tag}"
+                text1.text = f"1: {tag}"
                 image1.image = x.background
             else:
-                text2.text = f"monster2:{tag}"
+                text2.text = f"2:{tag}"
                 image2.image = x.background
                 buttonFight.enabled=True
                 buttonFight.color=RED
+
         monsters=[]
+        idx=0
         for row in range(4):
             monster_row=[]
             for col in range(4):
-                #=Label(f"m{row}{col}",(500+col*125,87.5+row*125,100,100))
-                if col%2==0:
-                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*125,87.5+row*125,100,100), image="./images/Deep One.jpg")
+                if idx >= len(self.engine.available_monsters): 
+                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*125,87.5+row*125,100,100), image="")
+                    buttonImage.enabled=False
+                elif col%2==0:
+                    m=self.engine.available_monsters[idx]
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
                 else:
-                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*125,87.5+row*125,100,100), image="./images/Giant Ant.jpg")
+                    m=self.engine.available_monsters[idx]
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
                 buttonImage.onclick = onclickSelect
                 self.add_element(buttonImage)
+                idx=idx+1
 
                 monster_row.append(buttonImage)
             monsters.append(monster_row)

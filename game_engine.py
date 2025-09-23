@@ -94,7 +94,9 @@ class Monster:
         self.name = data["Name"]
         self.initiative = 0
         self.hit_dice = data["Hit Dice"]
+        self.creature_type = data["CreatureType"]
         self.hp = 0
+        self.image_file = data["Image"]
         self.actions = data["Actions"]
         self.ac = data["AC"]
         self.multiattack = False
@@ -115,6 +117,15 @@ class Monster:
 
         print(f"create new monster named {self.name}")
 
+    def __str__(self):
+        return f"<Monster {self.name}>"
+    
+    def get_image(self):
+        if self.image_file=="":
+            return f"./images/Default-{self.creature_type}.jpg"
+        else:
+            return self.image_file
+    
     def update_conditions(self):
         for c in self.conditions.copy():
             n=self.conditions[c]-1
@@ -148,14 +159,17 @@ class Monster:
 class GameEngine:
 
     def __init__(self):
+        
         self.round_number=-1
         self.fight_order:List[Monster]=[]
         self.m_active:Monster=None
         self.events=GameEvents()
 
-    def get_monster_list(self)->List[Monster]:
-        return []
-    
+        f=open("MonsterStats.json")
+        text=f.read()
+        monsters=json.loads(text)
+        self.available_monsters = [Monster(m, self.events) for m in monsters]
+            
     def start_fight(self, monsters:List[Monster]):
         m1=monsters[0]
         m2=monsters[1]
@@ -291,14 +305,7 @@ def order_text(n:int)->str:
 def main():
 
     engine=GameEngine()
-    f=open("MonsterStats.json")
-    text=f.read()
-    monsters=json.loads(text)
-    #print(monsters)
-    monsters = [Monster(m,engine.events) for m in monsters]
-    #print(monsters[2].name)
-
-    run_a_fight(monsters, engine)
+    run_a_fight(engine.monsters, engine)
 
     #run_a_fight(monsters)
 
