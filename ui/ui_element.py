@@ -34,7 +34,6 @@ UI_EventHandler = Callable[[pygame.event.Event], None]
 def NoOp_EventHandler(event: pygame.event.Event):
     pass
 
-
 class UI_Element(ABC):
     "a simple UI element that supports click and hover and borders"     
     def __init__(self, id: str, rect: pygame.Rect, *,
@@ -118,6 +117,9 @@ class UI_Element(ABC):
     def changed(self) -> bool:
         "True if changed since last draw"
         return self._changed
+    @changed.setter
+    def changed(self, value) -> bool:
+        self._changed = value
 
     # --- event handlers ---
 
@@ -154,23 +156,28 @@ class UI_Element(ABC):
 
     # ---- methods for implementations to override -------
 
-    def process(self, event: pygame.event.Event) -> None:
-        "process events"
+    def process(self, event: pygame.event.Event) -> bool:
+        "process events, returns true if position is in element"
 
         # handle mouse click and mouse movement
         if event.type == MOUSEBUTTONDOWN:
             if self.is_in(*event.pos):
                 self._onclick(self)
+                return True
         elif event.type == MOUSEMOTION:
             if self.is_in(*event.pos):
                 if not self._hover:
                     self._onenter(self)
                     self._hover = True
+                return True
             else:
                 if self._hover:
                     self._onexit(self)
                     self._hover = False
-        
+                return False
+        else:
+            return False
+
     def tick(self) -> None:
         "called per tick (typically 1/30 of a second)"
         pass

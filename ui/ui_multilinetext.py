@@ -155,7 +155,7 @@ class UI_MultiLineText(UI_Element):
             image.blit(txt_image, (offset, h), area=src_area)
             h += self._row_height
 
-    def process(self, event: pygame.event.Event) -> None:
+    def process(self, event: pygame.event.Event) -> bool:
         "process events"
 
         # handle up/down arrows
@@ -165,16 +165,17 @@ class UI_MultiLineText(UI_Element):
                 self.start_row -= 1
                 self._scroll_key = key
                 self._scroll_delay = 10
+                return False
             elif key == pygame.K_DOWN: 
                 self.start_row += 1
                 self._scroll_key = key
                 self._scroll_delay = 10
-            else:
-                super().process(event)
+                return False
         elif event.type == KEYUP:
             self._scroll_key = pygame.K_SPACE
-        else:
-            super().process(event)
+            return False
+
+        return super().process(event)
 
     def tick(self):
         if self._scroll_key == pygame.K_UP:

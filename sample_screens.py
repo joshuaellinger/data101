@@ -7,6 +7,7 @@ from datetime import datetime, time
 from typing import List
 
 from ui import *
+from ui.effects import UI_Effect_Fade
 
 class View1(UI_View):
     "display a screen to show progress bar, text, and button widgets"
@@ -116,11 +117,13 @@ class View2(UI_View):
 
 
 # ------------------------------------------------------------------
+
 class View3(UI_View):
     "display a screen to show image widgets"
     def __init__(self):
         super().__init__("view3", "Images")
 
+        self._fade: UI_Effect = None
         self._last_time = datetime.now().time()
 
     def activate(self, host: UI_Host):
@@ -131,15 +134,15 @@ class View3(UI_View):
         self.add_element(text1)
         self.text1 = text1
 
-        image1 = UI_Image("image1", (40+150,40+55, 100,100))
+        image1 = UI_Image("image1", (40+150,40+55, 100,100), border_color=RED)
         self.add_element(image1)
+        self.image1 = image1
 
         def onclickSelect(x: UI_Element):
             tag = x.id.replace("button", "")
             text1.text = f"Selected {tag}"
             image1.image = x.background
-
-        
+            self._fade = None
 
         buttonImageGiantAnt = UI_Button("buttonGiantAnt", (40,40,100,100), "", background="./images/Giant Ant.jpg")
         buttonImageGiantAnt.onclick = onclickSelect
@@ -155,12 +158,36 @@ class View3(UI_View):
         buttonBack.onclick = onclickBack
         self.add_element(buttonBack)
 
+        buttonFade = UI_Button("buttonFade", (40+200,40+3*100,150,50), "Fade")
+        def onclickFade(x: UI_Element):
+            if self._fade is not None:
+                image1.border = 0
+                self._fade = None
+            else:
+                image1.border = 2
+                self._fade = UI_Effect_Fade(image1.rect.inflate(-4,-4))
+                def ondone(effect):
+                    image1.border = 0
+                    self.redraw()
+                    self._fade = None
+                self._fade.ondone = ondone
+        buttonFade.onclick = onclickFade
+        self.add_element(buttonFade)
+
     def deactivate(self, host: UI_Host):
         self.text1.text = ""
         pass
     
     def tick(self):
+        if self._fade: self._fade.tick()
         super().tick()
+
+    def update(self, surface: pygame.Surface):        
+        if self._fade: 
+            self._fade.update(surface)
+        else:
+            super().update(surface)
+
 
 # main loop for sample
 def main():

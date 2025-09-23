@@ -50,6 +50,8 @@ class UI_View(ABC):
 
     def add_element(self, element: UI_Element):
         "add an element to a view"
+        if element in self._elements:
+            raise Exception(f"Element {element.id} is already in View {self.id}")
         self._elements.append(element)
     
     def index_element(self, element: UI_Element) -> int:
@@ -59,6 +61,10 @@ class UI_View(ABC):
     def remove_element(self, element: UI_Element):
         "remove an element from a view"
         self._elements.remove(element)
+
+    def redraw(self):
+        for e in self._elements:
+            e.changed = True
 
     @abstractmethod
     def activate(self, host: "UI_Host"):
@@ -70,10 +76,11 @@ class UI_View(ABC):
         "cleanup after exiting a view"
         pass
 
-    def process(self, event: pygame.event.Event):
+    def process(self, event: pygame.event.Event) -> None:
         "process events"
-        for elem in self._elements:
-            elem.process(event)
+        # only process event one if there are overlapping elements
+        for elem in reversed(self._elements):
+            if elem.process(event): break
 
     def tick(self):
         "handle per-tick changes"
@@ -103,6 +110,8 @@ class UI_Host:
 
     def register_view(self, view: UI_View):
         "register a view with the host"
+        if view in self.views:
+            raise Exception(f"View {view.id} is already registered")
         self.views.append(view)
 
     def unregister_view(self, view: UI_View):
