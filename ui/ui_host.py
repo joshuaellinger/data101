@@ -76,6 +76,10 @@ class UI_View(ABC):
     # effects
     def add_effect(self, effect: UI_Effect):
         "add an effect to a view"
+
+        if not isinstance(effect, UI_Effect):
+            raise Exception("Input is not an effect")
+
         if effect in self._effects:
             raise Exception(f"Effect {effect.id} is already in View {self.id}")
         self._effects.append(effect)
@@ -112,9 +116,10 @@ class UI_View(ABC):
         # remove completed effects
         completed = []
         for effect in self._effects:
-            if effect.done: completed.add(effect)
+            if effect.done: completed.append(effect)
         for effect in completed:
-            self._effects.remove_effect(effect)
+            print(f"tick: remove effect {effect.id}")
+            self._effects.remove(effect)
 
         # run tick actions
         for elem in self._elements:
@@ -128,7 +133,7 @@ class UI_View(ABC):
         for elem in self._elements:
             elem.update(screen)
         for effect in self._effects:
-            effect.update(screen)
+           effect.update(screen)
 
 
 class UI_Host:
@@ -156,18 +161,22 @@ class UI_Host:
         "unregister a view from the host"
         self.views.remove(view)
 
+    def index_of(self, id: str) -> int:
+        for idx, v in enumerate(self.views):
+            if v.id == id:
+                return idx
+        raise Exception("Invalid View ID (" + id + "), registered views are:" + ", ". join([v.id for v in self.views]))
+
     def select_new_view(self, id: str):
         "select a new view once after update"
         if self.current_view.id == id:
             raise Exception("Cannot reselect current view")
 
-        for v in self.views:
-            if v.id == id:
-                self.next_view = v
-                return
-        raise Exception("Invalid View ID (" + id + "), registered views are:" + ", ". join([v.id for v in self.views]))
+        idx = self.index_of(id)
+        self.next_view = self.views[idx]
 
-    def run_game(self):
+
+    def run_game(self, start_at=""):
 
         # open the screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -176,8 +185,10 @@ class UI_Host:
         #sysfont = pygame.font.get_default_font()
         #font = pygame.font.SysFont(None, 48)
 
-        # activate the first view
-        self.current_view = self.views[0]
+        # activate the starting view
+        idx = 0 if start_at == "" else self.index_of(start_at)
+
+        self.current_view = self.views[idx]
         self.current_view.activate(self)
         pygame.display.set_caption(self.current_view.caption)
 

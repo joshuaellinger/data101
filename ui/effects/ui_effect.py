@@ -75,6 +75,11 @@ class UI_Effect(ABC):
         self._ondone = value
 
     # processing routines
+    def reset(self) -> None:
+        "reset an effect so it can run again"
+        self._done = False
+        self._changed = False
+
     def tick(self) -> None:
         "called per tick (typically 1/30 of a second)"
         pass

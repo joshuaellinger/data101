@@ -7,7 +7,7 @@ from datetime import datetime, time
 from typing import List
 
 from ui import *
-from ui.effects import UI_Effect_Fade
+from ui.effects import UI_Effect_Fade, UI_Effect_Burn
 
 class View1(UI_View):
     "display a screen to show progress bar, text, and button widgets"
@@ -150,27 +150,39 @@ class View3(UI_View):
         buttonImageDeepOne.onclick = onclickSelect
         self.add_element(buttonImageDeepOne)
 
-        buttonBack = UI_Button("buttonBack", (40,40+3*100,150,50), "<< Back")
+        buttonBack = UI_Button("buttonBack", (40,40+4*100,150,50), "<< Back")
         def onclickBack(x: UI_Element):
             host.select_new_view("view2")
         buttonBack.onclick = onclickBack
         self.add_element(buttonBack)
 
-        buttonFade = UI_Button("buttonFade", (40+200,40+3*100,150,50), "Fade")
-        def onclickFade(x: UI_Element):
-            image1.border = 2
-            buttonFade.enabled = False
+        # -- helper
+        def make_effect_test_button(name, n, effect) -> UI_Button:
+            button = UI_Button("button" + name, (40+n*200,40+3*100,150,50), name)
+            def onclick(x: UI_Element):
+                image1.border = 2
+                button.enabled = False
+                
+                effect.reset()
+                self.add_effect(effect)
+            
+                def ondone(effect):
+                    image1.border = 0
+                    self.redraw()
+                    button.enabled = True
+                effect.ondone = ondone
+            button.onclick = onclick
+            return button
 
-            fader = UI_Effect_Fade(image1.rect.inflate(-4,-4))
-            def ondone(effect):
-                image1.border = 0
-                self.redraw()
-                buttonFade.enabled = True
-            fader.ondone = ondone
-            self.add_effect(fader)
-
-        buttonFade.onclick = onclickFade
+        buttonFade = make_effect_test_button("Fade", 0,
+            UI_Effect_Fade(image1.rect.inflate(-4,-4))
+        )
         self.add_element(buttonFade)
+
+        buttonBurn = make_effect_test_button("Burn", 1,
+            UI_Effect_Burn(image1.rect.inflate(-4,-4))
+        )
+        self.add_element(buttonBurn)
 
     def deactivate(self, host: UI_Host):
         self.text1.text = ""
@@ -189,7 +201,7 @@ def main():
     host.register_view(View1())
     host.register_view(View2())
     host.register_view(View3())
-    host.run_game()
+    host.run_game("view3")
     
 if __name__ == "__main__":
     main()

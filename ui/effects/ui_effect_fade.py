@@ -18,7 +18,13 @@ class UI_Effect_Fade(UI_Effect):
         self._counter = 0
         self._min = 0
         self._max = 255
-   
+
+    def reset(self) -> None:
+        self._counter = 0
+        self._min = 0
+        self._max = 255
+        super().reset()
+
     def tick(self) -> None:
         if self.done:
             self.changed = False
