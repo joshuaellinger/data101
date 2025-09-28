@@ -1,6 +1,6 @@
 import pygame
 from pygame.surfarray import pixels3d, array3d, blit_array
-
+from enum import Enum
 import numpy as np
 from scipy.signal import convolve2d 
 
@@ -19,17 +19,93 @@ BLUR_FILTER = np.array([[.1, .1, .1],
                 [.1, .1, .1]]) 
 
 
+class BURN_MODE(Enum):
+    RANDOM = 1,
+    FROM_BOTTOM = 2,
+    FROM_EDGES = 3 
+
+class BurnPoints:
+
+    def __init__(self, mode: BURN_MODE, width: int, height: int):
+        self.mode = mode
+        self.width = width
+        self.height = height
+
+        self.num_reps = 0
+        self.enabled = True
+
+        self.cnt = int(np.log(width*height)) + 2
+
+        self.x = np.random.random(self.cnt)*self.width
+        self.dx = 2*np.random.randn(self.cnt)
+        
+        if self.mode == BURN_MODE.RANDOM: 
+            self.y = np.random.random(self.cnt)*self.height
+            self.dy = 2*np.random.randn(self.cnt)
+        elif self.mode == BURN_MODE.FROM_BOTTOM: 
+            self.y = (self.height - 1) - np.random.random(self.cnt)*3
+            self.dy = np.clip(2.0*np.random.randn(self.cnt) + 2.5, 0.0, 10.0)
+        
+    def apply(self, dest: np.ndarray):
+        x = self.x.astype(np.int32).clip(0, self.width-1) 
+        y = self.y.astype(np.int32).clip(0, self.height-1) 
+        dest[x,y] = 1.0
+
+        # after 10 reps, there is a 5% change to disable
+        self.num_reps += 1
+        if self.num_reps > 10:
+            p = np.random.random(1)
+            if p < 0.05:
+                self.enabled = False
+
+    def adjust(self):
+
+        # adjust existing points velocity            
+        
+        if self.mode == BURN_MODE.RANDOM: 
+            self.dx = self.dx * (1 + 0.1*np.random.randn(self.cnt) + 0.1) + np.random.randn(self.cnt)
+            self.dy = self.dy * (1 + 0.1*np.random.randn(self.cnt) + 0.1) + np.random.randn(self.cnt)
+        elif self.mode == BURN_MODE.FROM_BOTTOM: 
+            self.dx = self.dx * (1 + 0.025*np.random.randn(self.cnt)) + 2.*np.random.randn(self.cnt)
+            self.dy = self.dy * (1 + 0.1*np.random.randn(self.cnt) ) - 2*np.random.randn(self.cnt) - 0.5
+            self.dy = np.clip(self.dy, -10.0, 1.0)
+
+        # update position
+        self.x += self.dx
+        self.y += self.dy
+
+        # randomly reset 10% of the points
+        prob = np.random.random(self.cnt)
+        x = np.random.random(self.cnt)*self.width
+
+        if self.mode == BURN_MODE.RANDOM: 
+            y = np.random.random(self.cnt)*self.height
+        elif self.mode == BURN_MODE.FROM_BOTTOM: 
+            scale = min(self.num_reps, self.height-1)
+            y = self.height - np.random.random(self.cnt)*scale
+        self.x = np.where(prob > 0.10, self.x, x)
+        self.y = np.where(prob > 0.10, self.y, y)
+        
+        if self.mode == BURN_MODE.FROM_BOTTOM and 3*self.num_reps > self.height:
+            self.mode = BURN_MODE.RANDOM
+
+        #dx, dy = 2*np.random.randn(self.cnt), 2*np.random.randn(self.cnt)
+        #self.dx = np.where(prob > 0.10, self.dx, dx)
+        #self.dy = np.where(prob > 0.10, self.dy, dy)
+
+
+
+
 
 class UI_Effect_Burn(UI_Effect):
     "burn to a background gray value"
-    def __init__(self, rect: pygame.Rect, background=200, duration=80):
+    def __init__(self, rect: pygame.Rect, background=200, duration=200, mode=BURN_MODE.RANDOM):
         super().__init__("Burn", rect)
         self._background = background
         self._duration = duration
-   
-        self._burn_points: np.ndarry = None
-        self._point_cnt = 2
-        self._point_step = 2
+        self._mode = mode 
+
+        self._burn_points: BurnPoint = None
 
         self._burn_state: np.ndarray = None
         self._burn_image: np.ndarray = None
@@ -43,9 +119,7 @@ class UI_Effect_Burn(UI_Effect):
         self._counter = 0
         self._delay = 5.0
 
-        self._burn_points: np.ndarry = None
-        self._point_cnt = 2
-        self._point_step = 2
+        self._burn_points: BurnPoint = None
 
         self._burn_state: np.ndarray = None
         self._burn_image: pygame.Surface = None
@@ -68,69 +142,14 @@ class UI_Effect_Burn(UI_Effect):
         self._burn_state = np.zeros((w, h))
 
         # setup burn points
-        n = self._point_cnt
-        x = (np.random.random(n)*w).astype(np.int32).clip(0, w-1) 
-        y = (np.random.random(n)*h).astype(np.int32).clip(0, h-1) 
-        self._burn_points = np.zeros((n,2), dtype=np.int32)
-        self._burn_points[:,0] = x
-        self._burn_points[:,1] = y
+        self._burn_points = BurnPoints(self._mode, w, h)
 
-    def adjust_burn_points(self):        
-        
-        n = self._point_cnt
-        step = self._point_step
-        if step == 0:
-            return
-
-        points = self._burn_points
-
-        # set burn points in state to 1 
-        x, y = points[:,0], points[:,1]
-        self._burn_state[x,y] = 1.0
-
-        w,h = self._burn_state.shape
-
-        if step > 0: 
-            # ----- ramping up mode -----
-            # adjust existing points by +/- N(2)
-            x = (x + 3.0*np.random.randn(n)).astype(np.int32).clip(0, w-1) 
-            y = (y + 3.0*np.random.randn(n)).astype(np.int32).clip(0, h-1) 
-            points[:,0] = x
-            points[:,1] = y
-
-            # add new points
-            points.resize(n+step,2,refcheck=False)
-            x = (np.random.random(step)*w).astype(np.int32).clip(0, w-1) 
-            y = (np.random.random(step)*h).astype(np.int32).clip(0, h-1) 
-            points[n:,0] = x
-            points[n:,1] = y
-
-            # after 10, start ramping down
-            n += step
-            self._point_cnt = n
-            if n >= 10: self._point_step = -1
-        else: 
-            # ----- ramping down mode -----
-            # stop adding burn points at bottom of ramp
-            if n+step <= 2:
-                step = 0
-                return
-
-            n += step
-            points.resize(n,2,refcheck=False)
-
-            # adjust existing points by +/- N(4)
-            x, y = points[:,0], points[:,1]
-            x = (x + 4.0*np.random.randn(n)).astype(np.int32).clip(0, w-1) 
-            y = (y + 4.0*np.random.randn(n)).astype(np.int32).clip(0, h-1) 
-            points[:,0] = x
-            points[:,1] = y
-
-        self._burn_points = points
 
     def expand_burn(self):
 
-        self.adjust_burn_points()
+        if self._burn_points.enabled:
+            self._burn_points.adjust()
+            self._burn_points.apply(self._burn_state)
 
         # randomize weights
         x = 0.5+np.random.randn(25).reshape((5,5))
@@ -167,7 +186,8 @@ class UI_Effect_Burn(UI_Effect):
 
         # Combine the results
         edges = np.sqrt(edges_x**2 + edges_y**2)
-        edges = edges / edges.max()  # Normalize
+        e_max = edges.max() 
+        if e_max > 0.0: edges = edges / e_max   # Normalize
 
         # Blur
         edges = convolve2d(edges, BLUR_FILTER, mode='same')
