@@ -89,8 +89,8 @@ class ViewFight(UI_View):
     def deactivate(self, host: UI_Host):
         self.clear()
 
-    def tick(self):
-        super().tick()
+    def tick(self, host: UI_Host):
+        super().tick(host)
 
 
 

@@ -52,7 +52,7 @@ class View1(UI_View):
     def deactivate(self, host: UI_Host):
         self.clear()
 
-    def tick(self):
+    def tick(self, host: UI_Host):
         # update the time every second
         t = datetime.now()
         diff = t - self.last_time
@@ -64,7 +64,7 @@ class View1(UI_View):
             if self.progress2.percentage <= 0.5:
                 self.progress2.color = RED 
 
-        super().tick()
+        super().tick(host)
 
 # ------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ class View2(UI_View):
         self.textBox1.clear()
         self.textBox1.deactivate()
     
-    def tick(self):
+    def tick(self, host: UI_Host):
 
         # add a row every second and scroll when full up to 20
         t = datetime.now()
@@ -113,7 +113,7 @@ class View2(UI_View):
             self.textBox1.show_last_row()
             self._last_time = t
 
-        super().tick()
+        super().tick(host)
 
 
 # ------------------------------------------------------------------
@@ -188,8 +188,8 @@ class View3(UI_View):
         self.text1.text = ""
         pass
     
-    def tick(self):
-        super().tick()
+    def tick(self, host: UI_Host):
+        super().tick(host)
 
     def update(self, surface: pygame.Surface):        
         super().update(surface)
