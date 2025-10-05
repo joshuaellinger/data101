@@ -17,6 +17,8 @@ Background = Tuple[pygame.Color, pygame.Surface, tuple, str]
 # ----------------------------------------------------------------
 # Render Utilites
 # ----------------------------------------------------------------
+image_cache = {}
+
 def create_surface(width: int, height: int, background: Background) -> pygame.Surface:
     "create a new filled surface. background is either a color or an image path"
     if type(background) == pygame.Color or type(background) == tuple:
@@ -27,7 +29,11 @@ def create_surface(width: int, height: int, background: Background) -> pygame.Su
             surface = pygame.Surface((width, height))
             surface.fill(WHITE)
         else:
-            image = pygame.image.load(background)
+            image = image_cache.get(background)
+            if image == None:
+                image = pygame.image.load(background).convert()
+                image_cache[background] = image
+
             r = image.get_rect()
             scale_x, scale_y = width / r.width, height / r.height 
             surface = pygame.transform.smoothscale_by(image, (scale_x, scale_y))
