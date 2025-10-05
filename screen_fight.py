@@ -4,28 +4,28 @@ import pygame
 from pygame.locals import *
 import time
 from ui import *
-from game_engine import GameEngine, GameEvents, next_action, Monster
+from game_engine import GameEngine, GameEvents, advance_game_state, Monster
 from typing import List
 
 
 class GameEventsGUI(GameEvents):
     def __init__(self, display:UI_MultiLineText):
         self.display=display
-        super().__init__(self)
+        super().__init__()
     def print(self, msg:str=""):
+        print(msg)
         self.display.add_line(msg)
     def signal_start_of_round(self, round:int):
         pass
 
 class ViewFight(UI_View):
     "display a screen to show fight match, text, and button widgets"
-    def __init__(self, monsters:List[Monster], engine:GameEngine):
-        self.monsters=monsters
+    def __init__(self, engine:GameEngine):
         self.engine=engine
         super().__init__("viewFight", "FIGHT!!!")
 
     def activate(self, host: UI_Host):
-
+        
         screen = host.screen
         screen.fill(GRAY)
 
@@ -101,7 +101,7 @@ class ViewFight(UI_View):
 
     def tick(self, host: UI_Host):
 
-        if not next_action(self.monsters, self.engine):
+        if not advance_game_state(self.engine):
             host.select_new_view("viewResult")
         super().tick(host)
 
