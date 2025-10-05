@@ -26,9 +26,14 @@ class View1(UI_View):
         self.add_element(label)
         self.label = label
 
+
         progress1 = UI_ProgressBar("progress1", (40,40+2*75,150,50))
         self.add_element(progress1)
         self.progress1 = progress1
+
+        checkbox1 = UI_Checkbox("checkbox1", (40,40+4*75, 150, 50), text="run", checked=True)
+        self.add_element(checkbox1)
+        self.checkbox1 = checkbox1
 
         progress2 = UI_ProgressBar("progress2", (40+200,40,50,150), 
             current=20, maximum=20,
@@ -53,16 +58,20 @@ class View1(UI_View):
         self.clear()
 
     def tick(self, host: UI_Host):
-        # update the time every second
         t = datetime.now()
-        diff = t - self.last_time
-        if diff.total_seconds() >= 1: 
-            self.label.text = f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}"
+
+        if not self.checkbox1.checked:
             self.last_time = t
-            self.progress1.current += 1
-            self.progress2.current -= 1
-            if self.progress2.percentage <= 0.5:
-                self.progress2.color = RED 
+        else: 
+            # update the time every second
+            diff = t - self.last_time
+            if diff.total_seconds() >= 1: 
+                self.label.text = f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}"
+                self.last_time = t
+                self.progress1.current += 1
+                self.progress2.current -= 1
+                if self.progress2.percentage <= 0.5:
+                    self.progress2.color = RED 
 
         super().tick(host)
 
@@ -204,7 +213,7 @@ def main():
     host.register_view(View1())
     host.register_view(View2())
     host.register_view(View3())
-    host.run_game("view3")
+    host.run_game("view1")
     
 if __name__ == "__main__":
     main()
