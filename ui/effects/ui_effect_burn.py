@@ -2,7 +2,6 @@ import pygame
 from pygame.surfarray import pixels3d, array3d, blit_array
 from enum import Enum
 import numpy as np
-from scipy.signal import convolve2d 
 
 from .ui_effect import UI_Effect
 
@@ -146,6 +145,7 @@ class UI_Effect_Burn(UI_Effect):
 
 
     def expand_burn(self):
+        from scipy.signal import convolve2d 
 
         if self._burn_points.enabled:
             self._burn_points.adjust()
@@ -180,6 +180,8 @@ class UI_Effect_Burn(UI_Effect):
             self.done = True
 
     def compute_edges(self, source: np.ndarray) -> np.ndarray:
+        from scipy.signal import convolve2d 
+        
         # Apply convolution
         edges_x = convolve2d(source, SOBEL_FILTER_X, mode='same', boundary='symm')
         edges_y = convolve2d(source, SOBEL_FILTER_Y, mode='same', boundary='symm')
