@@ -99,11 +99,11 @@ class ViewFight(UI_View):
     def deactivate(self, host: UI_Host):
         self.clear()
 
-    def tick(self, host:UI_Host):
+    def tick(self, host: UI_Host):
 
         if not next_action(self.monsters, self.engine):
             host.select_new_view("viewResult")
-        super().tick()
+        super().tick(host)
 
 
 

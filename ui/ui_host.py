@@ -110,7 +110,7 @@ class UI_View(ABC):
         for elem in reversed(self._elements):
             if elem.process(event): break
 
-    def tick(self):
+    def tick(self, host: "UI_Host"):
         "handle per-tick changes"
 
         # remove completed effects
@@ -209,7 +209,7 @@ class UI_Host:
                 break
 
             # 3. tell the view to run periodic actions
-            self.current_view.tick()            
+            self.current_view.tick(self)            
 
             # 4. update the screen
             self.current_view.update(self.screen)            

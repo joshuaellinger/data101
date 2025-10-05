@@ -26,9 +26,9 @@ class ViewWelcome(UI_View):
     def deactivate(self, host: UI_Host):
         self.clear()
 
-    def tick(self):
-        # update the time every second
-        super().tick()
+    def tick(self, host: UI_Host):
+        # update the time every 1/30 of a second
+        super().tick(host)
 
 def screen_welcome():
     host = UI_Host()

@@ -89,8 +89,8 @@ class ViewMonsterSelect(UI_View):
         self.text1.text = ""
         pass
     
-    def tick(self):
-        super().tick()
+    def tick(self, host: UI_Host):
+        super().tick(host)
     
 
 
