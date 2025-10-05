@@ -8,11 +8,21 @@
 import random
 import json
 from typing import List, Union, Tuple
+from enum import Enum
+from abc import ABC, abstractmethod
 
-
-class GameEvents:
+class GameEvents(ABC):
     def __init__(self):
         pass
+    @abstractmethod
+    def print(self, msg:str=""):
+        pass
+    def signal_start_of_round(self, round:int):
+        pass
+
+class GameEventsConsole(GameEvents):
+    def __init__(self):
+        super().__init__(self)
     def print(self, msg:str=""):
         print(msg)
     def signal_start_of_round(self, round:int):
@@ -156,14 +166,21 @@ class Monster:
             n=random.randint(0,len(result)-1)
             return [result[n]]
 
+class GameStateEnum(Enum):
+    NEW_GAME=1,
+    NEW_ROUND=2,
+    TAKE_TURN=3,
+    GAME_OVER=4
+
 class GameEngine:
 
-    def __init__(self):
-        
+    def __init__(self, events:GameEvents=None):
+        self.state=GameStateEnum.NEW_GAME
+        self.monster_number=0
         self.round_number=-1
         self.fight_order:List[Monster]=[]
         self.m_active:Monster=None
-        self.events=GameEvents()
+        self.events=GameEventsConsole() if events==None else events
 
         f=open("MonsterStats.json")
         text=f.read()
@@ -229,6 +246,36 @@ class GameEngine:
             if m.hp>0:
                 return m
         return None
+
+def next_action(monsters:List[Monster], engine:GameEngine):
+    if engine.state==GameStateEnum.NEW_GAME:
+       engine.start_fight(monsters)
+       engine.state=GameStateEnum.NEW_ROUND 
+       return True
+    if engine.state==GameStateEnum.NEW_ROUND:
+        if not engine.is_fight_over():
+            engine.events.signal_start_of_round(engine.round_number)
+            engine.events.print(f"=== Round {engine.round_number} ===")
+            engine.state=GameStateEnum.TAKE_TURN
+            return True
+        else:
+            engine.state=GameStateEnum.GAME_OVER
+            return False
+    if engine.state==GameStateEnum.TAKE_TURN:
+        
+        m_active = engine.fight_order[engine.monster_number]
+        engine.m_active=m_active
+        m_active.update_conditions()
+        c=engine.next_action()
+        if c==False:
+            engine.monster_number=0
+            engine.state=GameStateEnum.NEW_ROUND
+            engine.round_number+=1
+            engine.events.print()
+        else:
+            engine.monster_number+=1
+        return True    
+    raise Exception("Unexpected State")
 
 def run_a_fight(monsters:List[Monster], engine:GameEngine):
     "runs a fight between the first two monsters in the list until one is dead."

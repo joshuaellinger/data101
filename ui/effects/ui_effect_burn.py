@@ -105,7 +105,7 @@ class UI_Effect_Burn(UI_Effect):
         self._duration = duration
         self._mode = mode 
 
-        self._burn_points: BurnPoint = None
+        self._burn_points: BurnPoints = None
 
         self._burn_state: np.ndarray = None
         self._burn_image: np.ndarray = None
@@ -119,7 +119,7 @@ class UI_Effect_Burn(UI_Effect):
         self._counter = 0
         self._delay = 5.0
 
-        self._burn_points: BurnPoint = None
+        self._burn_points: BurnPoints = None
 
         self._burn_state: np.ndarray = None
         self._burn_image: pygame.Surface = None
