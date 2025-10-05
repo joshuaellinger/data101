@@ -27,9 +27,10 @@ class ViewResult(UI_View):
     def deactivate(self, host: UI_Host):
         self.clear()
 
-    def tick(self):
+    def tick(self, host:UI_Host):
+
         # update the time every second
-        super().tick()
+        super().tick(host)
 
 def screen_result():
     host = UI_Host()

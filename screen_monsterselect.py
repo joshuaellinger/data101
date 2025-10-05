@@ -5,7 +5,7 @@ from pygame.locals import *
 import time
 from ui import *
 from datetime import datetime
-from game_engine import GameEngine
+from game_engine import GameEngine, Monster
 
 
 
@@ -14,6 +14,8 @@ class ViewMonsterSelect(UI_View):
     def __init__(self, engine:GameEngine):
         super().__init__("viewMonsterSelect", "Images")
         self.engine=engine
+        self.m1:Monster=None
+        self.m2:Monster=None
         self._last_time = datetime.now().time()
 
     def activate(self, host: UI_Host):
@@ -36,6 +38,7 @@ class ViewMonsterSelect(UI_View):
 
         buttonFight = UI_Button("buttonFight", (40,40+4*100,150,50), "Fight")
         def onclickFight(x: UI_Element):
+            self.engine.select_monsters([self.m1,self.m2])
             host.select_new_view("viewFight")
         buttonFight.onclick = onclickFight
         self.add_element(buttonFight)
@@ -46,11 +49,13 @@ class ViewMonsterSelect(UI_View):
             if text1.text=="":
                 text1.text = f"1: {tag}"
                 image1.image = x.background
+                self.m1= self.engine.find_monster_by_name(tag)
             else:
                 text2.text = f"2:{tag}"
                 image2.image = x.background
                 buttonFight.enabled=True
                 buttonFight.color=RED
+                self.m2= self.engine.find_monster_by_name(tag)
 
         monsters=[]
         idx=0

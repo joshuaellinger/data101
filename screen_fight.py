@@ -4,8 +4,19 @@ import pygame
 from pygame.locals import *
 import time
 from ui import *
-from game_engine import GameEngine
+from game_engine import GameEngine, GameEvents, advance_game_state, Monster
+from typing import List
 
+
+class GameEventsGUI(GameEvents):
+    def __init__(self, display:UI_MultiLineText):
+        self.display=display
+        super().__init__()
+    def print(self, msg:str=""):
+        print(msg)
+        self.display.add_line(msg)
+    def signal_start_of_round(self, round:int):
+        pass
 
 class ViewFight(UI_View):
     "display a screen to show fight match, text, and button widgets"
@@ -14,7 +25,7 @@ class ViewFight(UI_View):
         super().__init__("viewFight", "FIGHT!!!")
 
     def activate(self, host: UI_Host):
-
+        
         screen = host.screen
         screen.fill(GRAY)
 
@@ -53,12 +64,11 @@ class ViewFight(UI_View):
         self.stats2 = stats2
         
         #rect3=Label("fight log",(310,180,404,350))
-        rect3 = UI_MultiLineText("rect3", (310,180,404,350))
-        rect3.add_line ("Fight")
-        rect3.add_line ("Log")
+        rect3 = UI_MultiLineText("rect3", (310,180,404,350))          
         self.add_element(rect3)
         self.rect3 = rect3
 
+        self.engine.events=GameEventsGUI(rect3)
         title1 = UI_Text("title1", (310,55,404,110, ), text="Monster Mash!!!")
         self.add_element(title1)
         self.title1 = title1
@@ -90,6 +100,9 @@ class ViewFight(UI_View):
         self.clear()
 
     def tick(self, host: UI_Host):
+
+        if not advance_game_state(self.engine):
+            host.select_new_view("viewResult")
         super().tick(host)
 
 

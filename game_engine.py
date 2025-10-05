@@ -8,11 +8,21 @@
 import random
 import json
 from typing import List, Union, Tuple
+from enum import Enum
+from abc import ABC, abstractmethod
 
-
-class GameEvents:
+class GameEvents(ABC):
     def __init__(self):
         pass
+    @abstractmethod
+    def print(self, msg:str=""):
+        pass
+    def signal_start_of_round(self, round:int):
+        pass
+
+class GameEventsConsole(GameEvents):
+    def __init__(self):
+        super().__init__()
     def print(self, msg:str=""):
         print(msg)
     def signal_start_of_round(self, round:int):
@@ -156,23 +166,41 @@ class Monster:
             n=random.randint(0,len(result)-1)
             return [result[n]]
 
+class GameStateEnum(Enum):
+    NEW_GAME=1,
+    NEW_ROUND=2,
+    TAKE_TURN=3,
+    GAME_OVER=4
+
 class GameEngine:
 
-    def __init__(self):
-        
+    def __init__(self, events:GameEvents=None):
+        self.state=GameStateEnum.NEW_GAME
+        self.monster_number=0
+        self.attack_number=0
         self.round_number=-1
         self.fight_order:List[Monster]=[]
         self.m_active:Monster=None
-        self.events=GameEvents()
+        self.events=GameEventsConsole() if events==None else events
 
         f=open("MonsterStats.json")
         text=f.read()
         monsters=json.loads(text)
         self.available_monsters = [Monster(m, self.events) for m in monsters]
-            
-    def start_fight(self, monsters:List[Monster]):
-        m1=monsters[0]
-        m2=monsters[1]
+    
+    def find_monster_by_name(self, name:str):
+        for m in self.available_monsters:
+            if m.name==name:
+                return m
+        raise Exception("could not find monster")
+
+    def select_monsters(self, monsters:List[Monster]): 
+        self.m1=monsters[0]
+        self.m2=monsters[1]
+
+    def start_fight(self):
+        m1=self.m1
+        m2=self.m2
         self.events.print(f"{m1.name} vs. {m2.name}")
 
         self.fight_order=roll_for_initiative(m1,m2)
@@ -195,26 +223,26 @@ class GameEngine:
         m_opponent=find_opponent(self.fight_order, self.m_active)
         self.events.print(f"{self.m_active.name} attacks {m_opponent.name}")
         attacks= self.m_active.get_attacks()
-        for a in attacks:
-            self.events.print(f"{self.m_active.name} uses {a.attack_name}")
-            hit, crit= a.does_attack_hit(m_opponent.ac)
-            if hit:
-                dmg1,dt1=a.compute_damage(m_opponent.ivr,crit)
-                dmg2,dt2,s_f=a.apply_effects()
-                if not s_f:
-                    if dt2.strip() in m_opponent.conditions:
-                        self.events.print(f"{m_opponent.name} was{dt2}ed!")
-                    m_opponent.conditions[dt2.strip()]=10
-                m_opponent.hp=m_opponent.hp-dmg1-dmg2
-                if dmg1+dmg2== 0: dmgtxt="no"
-                elif dmg2==0: dmgtxt=f"{dmg1}{dt1}" 
-                else: dmgtxt =f"{dmg1}{dt1} and {dmg2}{dt2}"
-                self.events.print(f"{m_opponent.name} takes {dmgtxt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
-                if crit==True: self.events.print("Boom!")
-                if m_opponent.hp<=0:
-                    return False
-            else:
-                self.events.print(f"{self.m_active.name} misses!")
+        a=attacks[self.attack_number]
+        self.events.print(f"{self.m_active.name} uses {a.attack_name}")
+        hit, crit= a.does_attack_hit(m_opponent.ac)
+        if hit:
+            dmg1,dt1=a.compute_damage(m_opponent.ivr,crit)
+            dmg2,dt2,s_f=a.apply_effects()
+            if not s_f:
+                if dt2.strip() in m_opponent.conditions:
+                    self.events.print(f"{m_opponent.name} was{dt2}ed!")
+                m_opponent.conditions[dt2.strip()]=10
+            m_opponent.hp=m_opponent.hp-dmg1-dmg2
+            if dmg1+dmg2== 0: dmgtxt="no"
+            elif dmg2==0: dmgtxt=f"{dmg1}{dt1}" 
+            else: dmgtxt =f"{dmg1}{dt1} and {dmg2}{dt2}"
+            self.events.print(f"{m_opponent.name} takes {dmgtxt} damage. {m_opponent.name} has {m_opponent.hp} HP left.")
+            if crit==True: self.events.print("Boom!")
+            if m_opponent.hp<=0:
+                return False
+        else:
+            self.events.print(f"{self.m_active.name} misses!")
         return True
 
     def is_fight_over(self)->bool:
@@ -229,6 +257,40 @@ class GameEngine:
             if m.hp>0:
                 return m
         return None
+
+def advance_game_state(engine:GameEngine):
+    print("advance", engine.state)
+    if engine.state==GameStateEnum.NEW_GAME:
+       engine.start_fight()
+       engine.state=GameStateEnum.NEW_ROUND 
+       return True
+    if engine.state==GameStateEnum.NEW_ROUND:
+        if not engine.is_fight_over():
+            engine.events.signal_start_of_round(engine.round_number)
+            engine.events.print(f"=== Round {engine.round_number} ===")
+            engine.state=GameStateEnum.TAKE_TURN
+            return True
+        else:
+            engine.state=GameStateEnum.GAME_OVER
+            return False
+    if engine.state==GameStateEnum.TAKE_TURN:
+        
+        m_active = engine.fight_order[engine.monster_number]
+        engine.m_active=m_active
+        m_active.update_conditions()
+        c=engine.next_action()
+        if c==False:
+            engine.state=GameStateEnum.GAME_OVER
+            return False
+        elif engine.monster_number+1<len(engine.fight_order):
+            engine.monster_number+=1
+        else:
+            engine.monster_number=0
+            engine.state=GameStateEnum.NEW_ROUND
+            engine.round_number+=1
+            engine.events.print()
+        return True    
+    raise Exception(f"unexpected state{engine.state}")
 
 def run_a_fight(monsters:List[Monster], engine:GameEngine):
     "runs a fight between the first two monsters in the list until one is dead."
