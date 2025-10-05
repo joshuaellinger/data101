@@ -40,6 +40,8 @@ from .effects.ui_effect import UI_Effect
 #import ui_timer
 
 pygame.init()
+pygame.mixer.init()
+
 
 class UI_View(ABC):
     "Base class for define a view in a game"
@@ -151,6 +153,25 @@ class UI_Host:
         self.screen: pygame.Surface = None
         self.clock: pygame.time.Clock = None
 
+        self.background_music = ""
+
+    def play_background_music(self, file_path: str):
+        # see https://tabletopaudio.com/
+        if self.background_music != "":
+            pygame.mixer().stop()
+
+        print(f"play background music {file_path}")
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.play(loops=-1)
+        pygame.mixer.music.set_volume(1.0)
+        self.background_music = file_path
+
+    def stop_music(self):
+        if self.background_music != "":
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            self.background_music = ""
+
     def register_view(self, view: UI_View):
         "register a view with the host"
         if view in self.views:
@@ -181,7 +202,8 @@ class UI_Host:
         # open the screen
         self.screen = pygame.display.set_mode(self.screen_size)
         self.clock = pygame.time.Clock()
-        
+
+
         #sysfont = pygame.font.get_default_font()
         #font = pygame.font.SysFont(None, 48)
 
@@ -230,6 +252,7 @@ class UI_Host:
         
         #ui_timer.TIMER.record("QUIT")
 
+        pygame.mixer.quit()
         pygame.quit()    
 
     def exit_game(self):

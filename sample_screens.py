@@ -130,6 +130,8 @@ class View3(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
+        host.play_background_music("./sounds/473_Prison_Block.mp3")
+
         text1 = UI_Text("text1", (40,40+110*2, 350, 50))
         self.add_element(text1)
         self.text1 = text1
@@ -186,6 +188,7 @@ class View3(UI_View):
 
     def deactivate(self, host: UI_Host):
         self.text1.text = ""
+        host.stop_music()
         pass
     
     def tick(self, host: UI_Host):
