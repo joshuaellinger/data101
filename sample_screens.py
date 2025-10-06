@@ -7,7 +7,7 @@ from datetime import datetime, time
 from typing import List
 
 from ui import *
-from ui.effects import UI_Effect_Fade, UI_Effect_Burn
+from ui.effects import UI_Effect_Fade, UI_Effect_Burn, UI_Effect_Fractal
 
 class View1(UI_View):
     "display a screen to show progress bar, text, and button widgets"
@@ -131,8 +131,6 @@ class View3(UI_View):
     "display a screen to show image widgets"
     def __init__(self):
         super().__init__("view3", "Images")
-
-        self._fade: UI_Effect = None
         self._last_time = datetime.now().time()
 
     def activate(self, host: UI_Host):
@@ -167,9 +165,50 @@ class View3(UI_View):
         buttonBack.onclick = onclickBack
         self.add_element(buttonBack)
 
+        buttonNext = UI_Button("buttonNext", (40+150+20,40+4*100,150,50), "Next >>")
+        def onclickNext(x: UI_Text):
+            host.select_new_view("view4")
+        buttonNext.onclick = onclickNext
+        self.add_element(buttonNext)
+
+    def deactivate(self, host: UI_Host):
+        self.text1.text = ""
+        host.stop_music()
+        pass
+    
+    def tick(self, host: UI_Host):
+        super().tick(host)
+
+    def update(self, surface: pygame.Surface):        
+        super().update(surface)
+
+# ------------------------------------------------------------------
+
+class View4(UI_View):
+    "display a screen to show effects"
+    def __init__(self):
+        super().__init__("view4", "Effects")
+
+        self._effect: UI_Effect = None
+        self._last_time = datetime.now().time()
+
+    def activate(self, host: UI_Host):
+        screen = host.screen
+        screen.fill(GRAY)
+
+        image1 = UI_Image("image1", (40,40, 500,300), border_color=RED)
+        self.add_element(image1)
+        self.image1 = image1
+
+        buttonBack = UI_Button("buttonBack", (40,40+4*100,150,50), "<< Back")
+        def onclickBack(x: UI_Element):
+            host.select_new_view("view3")
+        buttonBack.onclick = onclickBack
+        self.add_element(buttonBack)
+
         # -- helper
         def make_effect_test_button(name, n, effect) -> UI_Button:
-            button = UI_Button("button" + name, (40+n*200,40+3*100,150,50), name)
+            button = UI_Button("button" + name, (40+n*200,60+3*100,150,50), name)
             def onclick(x: UI_Element):
                 image1.border = 2
                 button.enabled = False
@@ -179,7 +218,7 @@ class View3(UI_View):
             
                 def ondone(effect):
                     image1.border = 0
-                    self.redraw()
+                    #self.redraw()
                     button.enabled = True
                 effect.ondone = ondone
             button.onclick = onclick
@@ -195,9 +234,12 @@ class View3(UI_View):
         )
         self.add_element(buttonBurn)
 
+        buttonFractal = make_effect_test_button("Fractal", 2,
+            UI_Effect_Fractal(image1.rect.inflate(-4,-4))
+        )
+        self.add_element(buttonFractal)
+
     def deactivate(self, host: UI_Host):
-        self.text1.text = ""
-        host.stop_music()
         pass
     
     def tick(self, host: UI_Host):
@@ -213,7 +255,8 @@ def main():
     host.register_view(View1())
     host.register_view(View2())
     host.register_view(View3())
-    host.run_game("view1")
+    host.register_view(View4())
+    host.run_game("view4")
     
 if __name__ == "__main__":
     main()
