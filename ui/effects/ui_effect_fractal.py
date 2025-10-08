@@ -7,16 +7,17 @@ from .ui_effect import UI_Effect
 
 class FractalNamesEnum(Enum):
     MANDELBRIOT = 1,
-    JULIA = 2
+    JULIA = 2,
+    IFS = 3
 
 
 
 class UI_Effect_Fractal(UI_Effect):
     "render a fractal"
     def __init__(self, rect: pygame.Rect, background=200, iterations=20, 
-        fractal=FractalNamesEnum.JULIA, version=3):
+        fractal=FractalNamesEnum.MANDELBRIOT, version=1):
 
-        super().__init__("Fade", rect)
+        super().__init__("Fractial", rect)
         self._background = background
         self._iterations = iterations
         self._fractal = fractal
@@ -80,6 +81,11 @@ class UI_Effect_Fractal(UI_Effect):
             x = np.linspace(-w / s, w / s, num=w).reshape((1, w))
             y = np.linspace(-h / s, h / s, num=h).reshape((h, 1))
             self._Z = np.tile(x, (h, 1)) + 1j * np.tile(y, (1, w))
+        elif self._fractal == FractalNamesEnum.IFS:
+            from .ifs_calc import get_ifs_transform_by_name
+            self._ifs_transform = get_ifs_transform_by_name("fern")
+            self._ifs_points = np.reshape(np.array([1.0, 1.0]), shape=(1,2))
+            self._ifs_history = np.zeros((h, w))
         else:
             raise NotImplemented(f"{self._fractal} not implemented")
 
@@ -95,22 +101,40 @@ class UI_Effect_Fractal(UI_Effect):
             M[np.abs(Z)>2] = False
             N[M] = self._counter
             print(self._counter)
+        elif self._fractal == FractalNamesEnum.IFS:
+            from .ifs_calc import compute_ifs
+            last_point = self._ifs_points[-1,:]
+            self._ifs_points = compute_ifs(1_000, self._ifs_transform, last_point)
         else:
             raise NotImplemented(f"{self._fractal} not implemented")
 
     def update_image(self):
-        if False:
-            # plot set only
-            Z, M = self._Z.T, self._M.T
-            scaled = np.abs(Z*M)
+        if (self._fractal == FractalNamesEnum.MANDELBRIOT or
+            self._fractal == FractalNamesEnum.JULIA):
+            if False:
+                # plot set only
+                Z, M = self._Z.T, self._M.T
+                scaled = np.abs(Z*M)
+                xmin,xmax = np.min(scaled), np.max(scaled)
+                xscale = 1.0/(xmax-xmin)
+            else:
+                # plot when pixel when to infinity
+                N = self._N.T
+                scaled = N
+                xmin,xmax = np.min(scaled), np.max(scaled)
+                xscale = 1.0/(xmax-xmin)
+        elif self._fractal == FractalNamesEnum.IFS:
+            # transform x,y into screen coordinates
+            from .ifs_calc import points_to_index
+            w, h = self._ifs_history.shape
+            x_idx, y_idx = points_to_index(self._ifs_points, (-3, 3., -1.,12.), (w,h))
+            self._ifs_history[:,:] *= .95
+            self._ifs_history[x_idx, y_idx] = 1
+            scaled = self._ifs_history.T
             xmin,xmax = np.min(scaled), np.max(scaled)
             xscale = 1.0/(xmax-xmin)
         else:
-            # plot when pixel when to infinity
-            N = self._N.T
-            scaled = N
-            xmin,xmax = np.min(scaled), np.max(scaled)
-            xscale = 1.0/(xmax-xmin)
+            raise NotImplemented(f"{self._fractal} not implemented")
 
         # use colormap from matplotlib
         import matplotlib

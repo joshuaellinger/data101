@@ -200,15 +200,15 @@ class View4(UI_View):
         self.add_element(image1)
         self.image1 = image1
 
-        buttonBack = UI_Button("buttonBack", (40,40+4*100,150,50), "<< Back")
+        buttonBack = UI_Button("buttonBack", (40,40+5*100,150,50), "<< Back")
         def onclickBack(x: UI_Element):
             host.select_new_view("view3")
         buttonBack.onclick = onclickBack
         self.add_element(buttonBack)
 
         # -- helper
-        def make_effect_test_button(name, n, effect) -> UI_Button:
-            button = UI_Button("button" + name, (40+n*200,60+3*100,150,50), name)
+        def make_effect_test_button(name, x, y, effect) -> UI_Button:
+            button = UI_Button("button" + name, (40+x*200,60+(3+y)*100,150,50), name)
             def onclick(x: UI_Element):
                 image1.border = 2
                 button.enabled = False
@@ -224,19 +224,27 @@ class View4(UI_View):
             button.onclick = onclick
             return button
 
-        buttonFade = make_effect_test_button("Fade", 0,
+        buttonFade = make_effect_test_button("Fade", 0, 0,
             UI_Effect_Fade(image1.rect.inflate(-4,-4))
         )
         self.add_element(buttonFade)
 
-        buttonBurn = make_effect_test_button("Burn", 1,
+        buttonBurn = make_effect_test_button("Burn", 1, 0,
             UI_Effect_Burn(image1.rect.inflate(-4,-4))
         )
         self.add_element(buttonBurn)
 
-        buttonFractal = make_effect_test_button("Fractal", 2,
-            UI_Effect_Fractal(image1.rect.inflate(-4,-4))
-        )
+        from ui.effects import FractalNamesEnum
+        buttonFractal = make_effect_test_button("Mandel", 0, 1,
+            UI_Effect_Fractal(image1.rect.inflate(-4,-4), fractal=FractalNamesEnum.MANDELBRIOT))
+        self.add_element(buttonFractal)
+
+        buttonFractal = make_effect_test_button("Julia", 1, 1,
+            UI_Effect_Fractal(image1.rect.inflate(-4,-4), fractal=FractalNamesEnum.JULIA, version=3))
+        self.add_element(buttonFractal)
+
+        buttonFractal = make_effect_test_button("IFS", 2, 1,
+            UI_Effect_Fractal(image1.rect.inflate(-4,-4), fractal=FractalNamesEnum.IFS))
         self.add_element(buttonFractal)
 
     def deactivate(self, host: UI_Host):
