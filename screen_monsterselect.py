@@ -12,7 +12,7 @@ from game_engine import GameEngine, Monster
 class ViewMonsterSelect(UI_View):
     "display a screen to show image widgets"
     def __init__(self, engine:GameEngine):
-        super().__init__("viewMonsterSelect", "Images")
+        super().__init__("viewMonsterSelect", "SELECT YOUR MONSTER! :D")
         self.engine=engine
         self.m1:Monster=None
         self.m2:Monster=None
