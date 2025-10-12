@@ -27,6 +27,7 @@ class ViewFight(UI_View):
     def activate(self, host: UI_Host):
 
         self.counter=0
+        self.have_hp=False
         
         screen = host.screen
         screen.fill(GRAY)
@@ -40,6 +41,7 @@ class ViewFight(UI_View):
         self.add_element(name1)
         self.name1 = name1
 
+        hp = self.engine.m1.hp
         health1 = UI_ProgressBar("health1", (30,450,250,40), current=10, maximum=30)
         self.add_element(health1)
         self.health1 = health1
@@ -49,7 +51,7 @@ class ViewFight(UI_View):
         self.stats1 = stats1
         
         #rect2=Label("monster 2",(744,30,250,590))
-        image2 = UI_Image("image2", (744,170,250,250), image="./images/Deep One.jpg")
+        image2 = UI_Image("image2", (744,170,250,250), image=self.engine.m2.get_image())
         self.add_element(image2)
         self.rect2 = image2
 
@@ -57,6 +59,7 @@ class ViewFight(UI_View):
         self.add_element(name2)
         self.name2 = name2
 
+        hp = self.engine.m2.hp
         health2 = UI_ProgressBar("health2", (744,450,250,40), current=10, maximum=30)
         self.add_element(health2)
         self.health2 = health2
@@ -97,6 +100,16 @@ class ViewFight(UI_View):
         def onclickNext(x: UI_Text):
             if not advance_game_state(self.engine):
                 host.select_new_view("viewResult")
+            if not self.have_hp:
+                self.have_hp=False
+                self.health1.maximum=self.engine.m1.hp
+                self.health2.maximum=self.engine.m2.hp
+            self.health1.current=self.engine.m1.hp
+            self.health2.current=self.engine.m2.hp
+
+            self.stats1.text = f"{self.engine.m1.hp}"
+            self.stats2.text = f"{self.engine.m2.hp}"
+
         buttonNext.onclick = onclickNext
         self.buttonNext=buttonNext
         self.add_element(buttonNext)

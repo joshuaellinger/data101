@@ -62,7 +62,8 @@ class UI_ProgressBar(UI_Element):
     def maximum(self, value: int):
         if value == self._maximum: return
         if value <= 0:
-            raise Exception("maximum must be positive") 
+            #raise Exception("maximum must be positive")
+            return
         self._maximum = value
         if self._current > self._maximum:
             self._current = self._maximum
