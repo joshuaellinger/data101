@@ -25,12 +25,15 @@ class ViewFight(UI_View):
         super().__init__("viewFight", "FIGHT!!!")
 
     def activate(self, host: UI_Host):
+
+        self.counter=0
+        self.have_hp=False
         
         screen = host.screen
         screen.fill(GRAY)
 
         #rect1=Label("monster 1",(30,30,250,590))
-        image1 = UI_Image("image1", (30,170,250,250), image="./images/Giant Ant.jpg")
+        image1 = UI_Image("image1", (30,170,250,250), image=self.engine.m1.get_image())
         self.add_element(image1)
         self.image1 = image1
         
@@ -38,6 +41,7 @@ class ViewFight(UI_View):
         self.add_element(name1)
         self.name1 = name1
 
+        hp = self.engine.m1.hp
         health1 = UI_ProgressBar("health1", (30,450,250,40), current=10, maximum=30)
         self.add_element(health1)
         self.health1 = health1
@@ -47,7 +51,7 @@ class ViewFight(UI_View):
         self.stats1 = stats1
         
         #rect2=Label("monster 2",(744,30,250,590))
-        image2 = UI_Image("image2", (744,170,250,250), image="./images/Deep One.jpg")
+        image2 = UI_Image("image2", (744,170,250,250), image=self.engine.m2.get_image())
         self.add_element(image2)
         self.rect2 = image2
 
@@ -55,6 +59,7 @@ class ViewFight(UI_View):
         self.add_element(name2)
         self.name2 = name2
 
+        hp = self.engine.m2.hp
         health2 = UI_ProgressBar("health2", (744,450,250,40), current=10, maximum=30)
         self.add_element(health2)
         self.health2 = health2
@@ -69,7 +74,7 @@ class ViewFight(UI_View):
         self.rect3 = rect3
 
         self.engine.events=GameEventsGUI(rect3)
-        title1 = UI_Text("title1", (310,55,404,110, ), text="Monster Mash!!!")
+        title1 = UI_Image("title1", (310,55,404,110, ), image="images/Default-Plant.jpg")
         self.add_element(title1)
         self.title1 = title1
         
@@ -82,18 +87,31 @@ class ViewFight(UI_View):
 
         
         
-        buttonReset = UI_Button("buttonReset", (310,550,187,70), "Manual")
+        checkbox = UI_Checkbox("checkbox", (310,550,187,70), "Auto")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
-        def onclick(x: UI_Text):
-            self.health1.current = 20
-            self.health1.color = BLUE
-        buttonReset.onclick = onclick
-        self.add_element(buttonReset)
+        def onChecked(x: UI_Text):
+            self.checkbox.checked = True
+        checkbox.onclick = onChecked
+        self.add_element(checkbox)
+
+        self.checkbox = checkbox
 
         buttonNext = UI_Button("buttonNext", (527,550,187,70 ), "Next >>")
         def onclickNext(x: UI_Text):
-            host.select_new_view("viewResult")
+            if not advance_game_state(self.engine):
+                host.select_new_view("viewResult")
+            if not self.have_hp:
+                self.have_hp=False
+                self.health1.maximum=self.engine.m1.hp
+                self.health2.maximum=self.engine.m2.hp
+            self.health1.current=self.engine.m1.hp
+            self.health2.current=self.engine.m2.hp
+
+            self.stats1.text = f"{self.engine.m1.hp}"
+            self.stats2.text = f"{self.engine.m2.hp}"
+
         buttonNext.onclick = onclickNext
+        self.buttonNext=buttonNext
         self.add_element(buttonNext)
 
     def deactivate(self, host: UI_Host):
@@ -101,8 +119,18 @@ class ViewFight(UI_View):
 
     def tick(self, host: UI_Host):
 
-        if not advance_game_state(self.engine):
-            host.select_new_view("viewResult")
+        if not self.checkbox.checked:
+            pass
+
+        elif self.counter<10:
+            self.counter+=1
+            
+        else : 
+            self.counter=0
+
+            if not advance_game_state(self.engine):
+                self.buttonNext.enabled = True
+                pass
         super().tick(host)
 
 

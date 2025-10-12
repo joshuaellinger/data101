@@ -40,7 +40,7 @@ from .effects.ui_effect import UI_Effect
 #import ui_timer
 
 pygame.init()
-pygame.mixer.init()
+#pygame.mixer.init()
 
 
 class UI_View(ABC):
