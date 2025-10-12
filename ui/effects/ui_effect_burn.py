@@ -164,6 +164,11 @@ class UI_Effect_Burn(UI_Effect):
         # get edges
         edges = self.compute_edges(s1)
 
+        if s1.mean() >= 0.995:
+            s1[:] = 1.0
+        elif s1.mean() >= 0.999:
+            self.done = True
+            
         # update image
         s1_neg = (1.0 - np.where(s1<0.8, s1, 1.0)) 
         r = self._burn_image[:,:,0] * s1_neg + edges * 255.0
@@ -175,9 +180,7 @@ class UI_Effect_Burn(UI_Effect):
         b = self._burn_image[:,:,2] * s1_neg
         self._burn_image[:,:,2] = b.clip(0.0, 255.0).astype(np.uint8)
 
-        # stop when the image is all the same color
-        if s1.mean() >= 0.999:
-            self.done = True
+
 
     def compute_edges(self, source: np.ndarray) -> np.ndarray:
         from scipy.signal import convolve2d 

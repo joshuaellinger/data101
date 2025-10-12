@@ -28,6 +28,8 @@ class UI_Image(UI_Element):
 
     def update(self, screen: pygame.Surface):
         if not self._changed: return
+        print("redraw image")
+        
         image = create_surface(self._rect.width, self._rect.height, self._background)
         render_border(image, self._border, self.border_color)
 

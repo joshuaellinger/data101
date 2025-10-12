@@ -7,7 +7,7 @@ from datetime import datetime, time
 from typing import List
 
 from ui import *
-from ui.effects import UI_Effect_Fade, UI_Effect_Burn, UI_Effect_Fractal
+from ui.effects import UI_Effect_Fade, UI_Effect_Burn, UI_Effect_Fractal, UI_Effect_Melt
 
 class View1(UI_View):
     "display a screen to show progress bar, text, and button widgets"
@@ -191,6 +191,7 @@ class View4(UI_View):
 
         self._effect: UI_Effect = None
         self._last_time = datetime.now().time()
+        self.effect_buttons = []
 
     def activate(self, host: UI_Host):
         screen = host.screen
@@ -200,27 +201,38 @@ class View4(UI_View):
         self.add_element(image1)
         self.image1 = image1
 
-        buttonBack = UI_Button("buttonBack", (40,40+5*100,150,50), "<< Back")
+        buttonAnt = UI_Button("buttonAnt", (40,40+5*100,150,50), "Ant")
+        def onclickAnt(x: UI_Text):
+            self.image1.image = "images/Giant Ant.jpg"
+            self.image1.changed = True
+        buttonAnt.onclick = onclickAnt
+        self.add_element(buttonAnt)
+
+        buttonBack = UI_Button("buttonBack", (40+200,40+5*100,150,50), "<< Back")
         def onclickBack(x: UI_Element):
             host.select_new_view("view3")
         buttonBack.onclick = onclickBack
         self.add_element(buttonBack)
 
+        self.effect_buttons = []
+
         # -- helper
         def make_effect_test_button(name, x, y, effect) -> UI_Button:
-            button = UI_Button("button" + name, (40+x*200,60+(3+y)*100,150,50), name)
+            button = UI_Button("button" + name, (40+x*200,60+300+y*60,150,50), name)
+            self.effect_buttons.append(button)
             def onclick(x: UI_Element):
-                image1.border = 2
-                button.enabled = False
-                
+                for b in self.effect_buttons:
+                    b.enabled = False
+                           
                 effect.reset()
                 self.add_effect(effect)
             
                 def ondone(effect):
-                    image1.border = 0
                     #self.redraw()
-                    button.enabled = True
+                    for b in self.effect_buttons:
+                        b.enabled = True
                 effect.ondone = ondone
+
             button.onclick = onclick
             return button
 
@@ -233,6 +245,11 @@ class View4(UI_View):
             UI_Effect_Burn(image1.rect.inflate(-4,-4))
         )
         self.add_element(buttonBurn)
+
+        buttonMelt = make_effect_test_button("Melt", 2, 0,
+            UI_Effect_Melt(image1.rect.inflate(-4,-4))
+        )
+        self.add_element(buttonMelt)
 
         from ui.effects import FractalNamesEnum
         buttonFractal = make_effect_test_button("Mandel", 0, 1,
@@ -248,6 +265,7 @@ class View4(UI_View):
         self.add_element(buttonFractal)
 
     def deactivate(self, host: UI_Host):
+        self.effect_buttons = []
         pass
     
     def tick(self, host: UI_Host):
