@@ -120,7 +120,6 @@ class UI_View(ABC):
         for effect in self._effects:
             if effect.done: completed.append(effect)
         for effect in completed:
-            print(f"tick: remove effect {effect.id}")
             self._effects.remove(effect)
 
         # run tick actions
