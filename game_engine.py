@@ -106,6 +106,7 @@ class Monster:
         self.hit_dice = data["Hit Dice"]
         self.creature_type = data["CreatureType"]
         self.hp = 0
+        self.max_hp = 0
         self.image_file = data["Image"]
         self.actions = data["Actions"]
         self.ac = data["AC"]
@@ -210,8 +211,10 @@ class GameEngine:
             i=i+1
 
         m1.hp=roll_the_dice(m1.hit_dice, False)
+        m1.max_hp=m1.hp
         self.events.print(f"{m1.name} has {m1.hp} HP.")
         m2.hp=roll_the_dice(m2.hit_dice, False)
+        m2.max_hp=m2.hp
         self.events.print(f"{m2.name} has {m2.hp} HP.")
         self.round_number=1
 
