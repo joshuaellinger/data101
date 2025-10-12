@@ -114,10 +114,10 @@ class UI_Effect_Melt(UI_Effect):
             return
 
         # only change every N ticks (1/15 second)
-        if self._delay >= 0.0:
-            self._delay -= np.random.random(1) * 2.0
-            return
-        self._delay = 5.0 * (1.0 - self._counter/self._duration)
+        #if self._delay >= 0.0:
+        #    self._delay -= np.random.random(1) * 2.0
+        #    return
+        #self._delay = 5.0 * (1.0 - self._counter/self._duration)
     
         # raise done event when counter expires 
         if self._counter >= self._duration:
