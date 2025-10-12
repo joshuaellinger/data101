@@ -129,6 +129,18 @@ class ViewFight(UI_View):
         self.stats1.text = f"{self.engine.m1.hp}/{self.engine.m1.max_hp}"
         self.stats2.text = f"{self.engine.m2.hp}/{self.engine.m2.max_hp}"
 
+        p = self.engine.m1.hp/self.engine.m1.max_hp
+        if p <= .15:
+            self.health1.background=RED
+        else:
+            self.health1.background=BLUE
+            
+        p = self.engine.m2.hp/self.engine.m2.max_hp
+        if p <= .15:
+            self.health2.background=RED
+        else:
+            self.health2.background=BLUE
+
         self.rect3.show_last_row()
 
     def deactivate(self, host: UI_Host):
