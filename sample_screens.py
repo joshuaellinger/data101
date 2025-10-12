@@ -221,6 +221,7 @@ class View4(UI_View):
             button = UI_Button("button" + name, (40+x*200,60+300+y*60,150,50), name)
             self.effect_buttons.append(button)
             def onclick(x: UI_Element):
+                image1.border = 2
                 for b in self.effect_buttons:
                     b.enabled = False
                            

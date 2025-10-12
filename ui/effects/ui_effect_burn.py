@@ -159,28 +159,32 @@ class UI_Effect_Burn(UI_Effect):
         # convolve
         s0 = self._burn_state
         m = s0.mean()
-        if m >= 0.995:
+        if m >= 1.0:
             s1 = s0
             self.done = True
         elif m >= 0.990:
-            s0[:] = 1.0            
+            s0[:,:] = 1.0            
             s1 = s0
         else:
             s1 = convolve2d(s0, w, mode="same").clip(0.0,1.0)
             if m > 0.95:
-                s1[:,0] = 1
-                s1[:,-1] = 1
-                s1[0,:] = 1
-                s1[-1,:] = 1
+                s1[:,:1] = 1
+                s1[:,-2:] = 1
+                s1[:1,:] = 1
+                s1[-2:,:] = 1
             self._burn_state = s1
 
-        # get edges
-        edges = self.compute_edges(s1)
 
 
         # update image
         s1_neg = (1.0 - np.where(s1<0.8, s1, 1.0)) 
-        r = self._burn_image[:,:,0] * s1_neg + edges * 255.0
+        r = self._burn_image[:,:,0] * s1_neg
+        
+        # add edges
+        if m < 0.990:
+            edges = self.compute_edges(s1)
+            r += edges * 255.0
+
         self._burn_image[:,:,0] = r.clip(0.0, 255.0).astype(np.uint8)
 
         g = self._burn_image[:,:,1] * s1_neg
