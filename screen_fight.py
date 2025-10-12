@@ -32,7 +32,7 @@ class ViewFight(UI_View):
         screen.fill(GRAY)
 
         #rect1=Label("monster 1",(30,30,250,590))
-        image1 = UI_Image("image1", (30,170,250,250), image="./images/Giant Ant.jpg")
+        image1 = UI_Image("image1", (30,170,250,250), image=self.engine.m1.get_image())
         self.add_element(image1)
         self.image1 = image1
         
@@ -71,7 +71,7 @@ class ViewFight(UI_View):
         self.rect3 = rect3
 
         self.engine.events=GameEventsGUI(rect3)
-        title1 = UI_Text("title1", (310,55,404,110, ), text="Monster Mash!!!")
+        title1 = UI_Image("title1", (310,55,404,110, ), image="images/Default-Plant.jpg")
         self.add_element(title1)
         self.title1 = title1
         
@@ -84,7 +84,7 @@ class ViewFight(UI_View):
 
         
         
-        checkbox = UI_Checkbox("checkbox", (310,550,187,70), "Manual")
+        checkbox = UI_Checkbox("checkbox", (310,550,187,70), "Auto")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
         def onChecked(x: UI_Text):
             self.checkbox.checked = True
@@ -95,8 +95,10 @@ class ViewFight(UI_View):
 
         buttonNext = UI_Button("buttonNext", (527,550,187,70 ), "Next >>")
         def onclickNext(x: UI_Text):
-            host.select_new_view("viewResult")
+            if not advance_game_state(self.engine):
+                host.select_new_view("viewResult")
         buttonNext.onclick = onclickNext
+        self.buttonNext=buttonNext
         self.add_element(buttonNext)
 
     def deactivate(self, host: UI_Host):
@@ -105,16 +107,17 @@ class ViewFight(UI_View):
     def tick(self, host: UI_Host):
 
         if not self.checkbox.checked:
-            return
-
-        if self.counter<10:
-            self.counter+=1
-            return
-        self.counter=0
-
-        if not advance_game_state(self.engine):
-            #host.select_new_view("viewResult")
             pass
+
+        elif self.counter<10:
+            self.counter+=1
+            
+        else : 
+            self.counter=0
+
+            if not advance_game_state(self.engine):
+                self.buttonNext.enabled = True
+                pass
         super().tick(host)
 
 
