@@ -1,0 +1,16 @@
+ruby:
+icon (fight screen and results screen)
+welcome image
+
+
+sam:
+same monster bug
+double start roll msg
+gelatonous cube
+multi attack bug
+
+amelia:
+
+josh:
+burn effect
+fight screen screen size

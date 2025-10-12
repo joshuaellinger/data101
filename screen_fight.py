@@ -28,6 +28,7 @@ class ViewFight(UI_View):
 
         self.counter=0
         self.go_to_next_screen = False
+        self.has_printed_result = False
         
         screen = host.screen
         screen.fill(GRAY)
@@ -45,7 +46,7 @@ class ViewFight(UI_View):
         self.add_element(image1)
         self.image1 = image1
         
-        name1 = UI_Text("name1", (30,40,250,100), text="Giant Ant")
+        name1 = UI_Text("name1", (30,40,250,100), text=self.engine.m1.name)
         self.add_element(name1)
         self.name1 = name1
 
@@ -63,7 +64,7 @@ class ViewFight(UI_View):
         self.add_element(image2)
         self.rect2 = image2
 
-        name2 = UI_Text("name2", (744,40,250,100), text="Deep One")
+        name2 = UI_Text("name2", (744,40,250,100), text=self.engine.m2.name)
         self.add_element(name2)
         self.name2 = name2
 
@@ -114,18 +115,21 @@ class ViewFight(UI_View):
         self.add_element(buttonNext)
 
     def update_screen(self,host):
-        if self.engine.is_fight_over():
+        if self.engine.is_fight_over() and self.has_printed_result == False:
             winner=self.engine.get_winner()
             if winner != None:
                 self.engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
             else:
                 self.engine.events.print("Both die.")
                 self.engine.events.print()
+            self.has_printed_result = True
         self.health1.current=self.engine.m1.hp
         self.health2.current=self.engine.m2.hp
 
         self.stats1.text = f"{self.engine.m1.hp}/{self.engine.m1.max_hp}"
         self.stats2.text = f"{self.engine.m2.hp}/{self.engine.m2.max_hp}"
+
+        self.rect3.show_last_row()
 
     def deactivate(self, host: UI_Host):
         self.rect3.clear()
@@ -144,6 +148,7 @@ class ViewFight(UI_View):
 
             if not advance_game_state(self.engine):
                 self.buttonNext.enabled = True
+                self.go_to_next_screen = True
             self.update_screen(host)
         super().tick(host)
 
