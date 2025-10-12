@@ -16,7 +16,9 @@ class ViewWelcome(UI_View):
         screen = host.screen
         screen.fill(GRAY)
         #rect1=Label("welcome!",(310,80,404,350))
-        rect1 = UI_Button("rect1", (310,80,404,350), text="Welcome!")
+        rect1 = UI_Image("rect1", (310,40,404,110), image="./images/Logo.jpg")
+        self.add_element(rect1)
+        rect1 = UI_Image("rect1", (310,195,404,350), image="./images/Welcome.jpg")
         self.add_element(rect1)
         self.rect1 = rect1
         def onclickNext(x: UI_Text):
