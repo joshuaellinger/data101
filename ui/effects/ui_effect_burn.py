@@ -158,17 +158,26 @@ class UI_Effect_Burn(UI_Effect):
 
         # convolve
         s0 = self._burn_state
-        s1 = convolve2d(self._burn_state, w, mode="same").clip(0.0,1.0)
-        self._burn_state = s1
+        m = s0.mean()
+        if m >= 0.995:
+            s1 = s0
+            self.done = True
+        elif m >= 0.990:
+            s0[:] = 1.0            
+            s1 = s0
+        else:
+            s1 = convolve2d(s0, w, mode="same").clip(0.0,1.0)
+            if m > 0.95:
+                s1[:,0] = 1
+                s1[:,-1] = 1
+                s1[0,:] = 1
+                s1[-1,:] = 1
+            self._burn_state = s1
 
         # get edges
         edges = self.compute_edges(s1)
 
-        if s1.mean() >= 0.995:
-            s1[:] = 1.0
-        elif s1.mean() >= 0.999:
-            self.done = True
-            
+
         # update image
         s1_neg = (1.0 - np.where(s1<0.8, s1, 1.0)) 
         r = self._burn_image[:,:,0] * s1_neg + edges * 255.0
@@ -223,7 +232,7 @@ class UI_Effect_Burn(UI_Effect):
         super().tick()
 
     def update(self, surface: pygame.Surface):
-        if not self.changed: return
+        if self.done or not self.changed: return
 
         image = surface.subsurface(self._rect)
 

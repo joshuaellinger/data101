@@ -40,6 +40,9 @@ class MeltPoints:
             cut= max(int(cut), 0)
             dest[x,cut:,:] = vals[cut:]
 
+        if dest.mean() == 0.0:
+            self.done = True
+
 
     def adjust(self):
 
@@ -55,6 +58,7 @@ class MeltPoints:
         dy = np.convolve(dy, self.weights, mode="same")
         self.cut -= dy
 
+        print(self.num_reps)
         self.num_reps += 1
         if self.num_reps > 75:
             self.done = True
