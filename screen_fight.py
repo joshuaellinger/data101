@@ -25,6 +25,8 @@ class ViewFight(UI_View):
         super().__init__("viewFight", "FIGHT!!!")
 
     def activate(self, host: UI_Host):
+
+        self.counter=0
         
         screen = host.screen
         screen.fill(GRAY)
@@ -82,13 +84,14 @@ class ViewFight(UI_View):
 
         
         
-        buttonReset = UI_Button("buttonReset", (310,550,187,70), "Manual")
+        checkbox = UI_Checkbox("checkbox", (310,550,187,70), "Manual")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
-        def onclick(x: UI_Text):
-            self.health1.current = 20
-            self.health1.color = BLUE
-        buttonReset.onclick = onclick
-        self.add_element(buttonReset)
+        def onChecked(x: UI_Text):
+            self.checkbox.checked = True
+        checkbox.onclick = onChecked
+        self.add_element(checkbox)
+
+        self.checkbox = checkbox
 
         buttonNext = UI_Button("buttonNext", (527,550,187,70 ), "Next >>")
         def onclickNext(x: UI_Text):
@@ -101,8 +104,17 @@ class ViewFight(UI_View):
 
     def tick(self, host: UI_Host):
 
+        if not self.checkbox.checked:
+            return
+
+        if self.counter<10:
+            self.counter+=1
+            return
+        self.counter=0
+
         if not advance_game_state(self.engine):
-            host.select_new_view("viewResult")
+            #host.select_new_view("viewResult")
+            pass
         super().tick(host)
 
 

@@ -290,6 +290,8 @@ def advance_game_state(engine:GameEngine):
             engine.round_number+=1
             engine.events.print()
         return True    
+    if engine.state==GameStateEnum.GAME_OVER: 
+        return False
     raise Exception(f"unexpected state{engine.state}")
 
 def run_a_fight(monsters:List[Monster], engine:GameEngine):
