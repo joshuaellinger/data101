@@ -222,6 +222,9 @@ class GameEngine:
     def state(self) -> GameStateEnum:
         return self._state
 
+    def is_game_over(self) -> bool:
+        return self._state == GameStateEnum.GAME_OVER
+
     def find_monster_by_name(self, name:str):
         for m in self.available_monsters:
             if m.name==name:
