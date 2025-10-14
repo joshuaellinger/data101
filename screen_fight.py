@@ -5,6 +5,8 @@ from pygame.locals import *
 import time
 from ui import *
 from game_engine import GameEngine, GameEvents, Monster
+from ui.effects import UI_Effect_Burn
+
 from typing import List
 
 
@@ -26,27 +28,25 @@ class ViewFight(UI_View):
 
     def activate(self, host: UI_Host):
 
-        self.counter=0
-        self.go_to_next_screen = False
-        self.has_printed_result = False
+        self.tick_counter=0
+        self.game_over_counter = 0
         
         screen = host.screen
         screen.fill(GRAY)
 
-        rect3 = UI_MultiLineText("rect3", (310,180,404,350))          
-        self.add_element(rect3)
-        self.rect3 = rect3
+        textbox = UI_MultiLineText("textbox", (310,180,404,350))          
+        self.add_element(textbox)
+        self.textbox = textbox
 
-        self.engine.events=GameEventsGUI(rect3)
+        self.engine.events=GameEventsGUI(textbox)
 
         self.engine.start_fight()
 
-        #rect1=Label("monster 1",(30,30,250,590))
         image1 = UI_Image("image1", (30,170,250,250), image=self.engine.m1.get_image())
         self.add_element(image1)
         self.image1 = image1
         
-        name1 = UI_Text("name1", (30,40,250,100), text=self.engine.m1.name)
+        name1 = UI_Text("name1", (30,40,250,50), text=self.engine.m1.name)
         self.add_element(name1)
         self.name1 = name1
 
@@ -59,12 +59,11 @@ class ViewFight(UI_View):
         self.add_element(stats1)
         self.stats1 = stats1
         
-        #rect2=Label("monster 2",(744,30,250,590))
         image2 = UI_Image("image2", (744,170,250,250), image=self.engine.m2.get_image())
         self.add_element(image2)
-        self.rect2 = image2
+        self.image2 = image2
 
-        name2 = UI_Text("name2", (744,40,250,100), text=self.engine.m2.name)
+        name2 = UI_Text("name2", (744,40,250,50), text=self.engine.m2.name)
         self.add_element(name2)
         self.name2 = name2
 
@@ -77,52 +76,37 @@ class ViewFight(UI_View):
         self.add_element(stats2)
         self.stats2 = stats2
         
-        #rect3=Label("fight log",(310,180,404,350))
-
-        title1 = UI_Image("title1", (310,55,404,110, ), image="images/Default-Plant.jpg")
+        title1 = UI_Image("title1", (310,55,404,110, ), image="images/logo.jpg")
         self.add_element(title1)
         self.title1 = title1
         
-        #rect4=Label("     auto",(310,550,187,70))
-        #rect4 = UI_Text("rect4", (310,550,187,70), text="     Auto")
-        #self.add_element(rect4)
-        #self.rect4 = rect4
-
-        #label_result=Label("    result",(527,550,187,70))
-
-        
-        
-        checkbox = UI_Checkbox("checkbox", (310,550,187,50), "Auto")
+        checkboxAuto = UI_Checkbox("checkboxAuto", (310,550,187,50), "Auto")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
         def onChecked(x: UI_Text):
-            self.checkbox.checked = not self.checkbox.checked
-            self.buttonNext.enabled = not self.checkbox.checked
-        checkbox.onclick = onChecked
-        self.add_element(checkbox)
+            self.checkboxAuto.checked = not self.checkboxAuto.checked
+            self.buttonNext.enabled = self.engine.is_game_over() or not self.checkboxAuto.checked 
+            self.tick_counter = 0
+        checkboxAuto.onclick = onChecked
+        self.add_element(checkboxAuto)
 
-        self.checkbox = checkbox
+        self.checkboxAuto = checkboxAuto
 
         buttonNext = UI_Button("buttonNext", (527,550,187,50 ), "Next >>")
         def onclickNext(x: UI_Text):
-            if self.go_to_next_screen:
-                host.select_new_view("viewResult")
-            if not self.engine.advance_game_state():
-                self.go_to_next_screen = True
-            self.update_screen(host)
+            if self.engine.is_game_over():
+                if self.game_over_counter >= 5:
+                    host.select_new_view("viewResult")
+                else:
+                    self.update_screen_game_over()
+            else:
+                self.engine.advance_game_state()
+                self.update_screen()
 
         buttonNext.onclick = onclickNext
         self.buttonNext=buttonNext
         self.add_element(buttonNext)
 
-    def update_screen(self,host):
-        if self.engine.is_fight_over() and self.has_printed_result == False:
-            winner=self.engine.get_winner()
-            if winner != None:
-                self.engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
-            else:
-                self.engine.events.print("Both die.")
-                self.engine.events.print()
-            self.has_printed_result = True
+    def update_screen(self):
         self.health1.current=self.engine.m1.hp
         self.health2.current=self.engine.m2.hp
 
@@ -130,32 +114,59 @@ class ViewFight(UI_View):
         self.stats2.text = f"{self.engine.m2.hp}/{self.engine.m2.max_hp}"
 
         p = self.engine.m1.hp/self.engine.m1.max_hp
-        self.health1.color= RED if p <= .15 else BLUE 
+        self.health1.color= RED if p <= .20 else BLUE 
+        self.stats1.color= RED if p <= .20 else BLUE 
             
         p = self.engine.m2.hp/self.engine.m2.max_hp
-        self.health2.color= RED if p <= .15 else BLUE 
+        self.health2.color= RED if p <= .20 else BLUE 
+        self.stats2.color= RED if p <= .20 else BLUE 
 
-        self.rect3.show_last_row()
+        self.textbox.show_last_row()
+
+    def update_screen_game_over(self):
+        if self.game_over_counter == 0:
+            self.checkboxAuto.enabled = False
+            self.buttonNext.enabled = False
+            winner=self.engine.get_winner()
+            if winner != None:
+                self.engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
+            else:
+                self.engine.events.print("Both die.")
+                self.engine.events.print()
+            self.textbox.show_last_row()
+        elif self.game_over_counter == 2:
+            if self.engine.m1.hp <= 0:
+                effect = UI_Effect_Burn(self.image1.rect.inflate(-4,-4))
+                self.add_effect(effect)
+            if self.engine.m2.hp <= 0:
+                effect = UI_Effect_Burn(self.image2.rect.inflate(-4,-4))
+                self.add_effect(effect)
+        elif self.game_over_counter == 5:
+            self.buttonNext.enabled = True
+
+        self.game_over_counter += 1
 
     def deactivate(self, host: UI_Host):
-        self.rect3.clear()
+        self.textbox.clear()
         self.clear()
 
     def tick(self, host: UI_Host):
 
-        if not self.checkbox.checked:
-            pass
+        # slow down updates by x10
+        if self.tick_counter < 10:
+            self.tick_counter += 1  
+            super().tick(host)
+            return
 
-        elif self.counter<10:
-            self.counter+=1
-            
-        else : 
-            self.counter=0
+        self.tick_counter = 0
 
-            if not self.engine.advance_game_state():
-                self.buttonNext.enabled = True
-                self.go_to_next_screen = True
-            self.update_screen(host)
+        if self.engine.is_game_over():
+            self.update_screen_game_over()
+        else:
+            if self.checkboxAuto.checked:
+                self.engine.advance_game_state()
+            self.update_screen()
+
         super().tick(host)
 
 
