@@ -350,13 +350,13 @@ def run_a_round(engine:GameEngine):
     "fight a single round"
     for i in range(len(engine.fight_order)):
         engine.monster_number = i # changes active when assigned
-        engine._state = GameStateNum.TAKE_TURN:
+        engine._state = GameStateNum.TAKE_TURN
    
         engine.m_active.update_conditions()
         engine.perform_attack()
 
         if engine.m1.hp <= 0 or engine.m2.hp <= 0:
-            engine._state = GameStateNum.GAME_OVER:
+            engine._state = GameStateNum.GAME_OVER
             break
     
 def roll_the_dice(dice:str,crit:bool):
