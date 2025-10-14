@@ -8,7 +8,7 @@ from game_engine import GameEngine
 class ViewResult(UI_View):
     "display a screen to show progress bar, text, and button widgets"
     def __init__(self, engine:GameEngine):
-        super().__init__("viewResult", "Text/Button/Progress")
+        super().__init__("viewResult", "Winner")
         self.engine=engine
         self._last_time = datetime.now().time()
 
@@ -27,7 +27,7 @@ class ViewResult(UI_View):
         self.add_element(rect1)
         self.rect1 = rect1
         def onclickNext(x: UI_Text):
-            host.select_new_view("viewWelcome")
+            host.select_new_view("viewMonsterSelect")
         rect1.onclick = onclickNext
         
     def deactivate(self, host: UI_Host):

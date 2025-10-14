@@ -91,6 +91,9 @@ class UI_ProgressBar(UI_Element):
 
     def render(self) -> pygame.Surface:
 
+        if self.color == self.background:
+            raise Exception("Color and Background cannot be the same")
+
         img = create_surface(self.rect.width, self.rect.height, self.background)
 
         if self.orientation == Orientation.Horizontal:

@@ -130,16 +130,10 @@ class ViewFight(UI_View):
         self.stats2.text = f"{self.engine.m2.hp}/{self.engine.m2.max_hp}"
 
         p = self.engine.m1.hp/self.engine.m1.max_hp
-        if p <= .15:
-            self.health1.background=RED
-        else:
-            self.health1.background=BLUE
+        self.health1.color= RED if p <= .15 else BLUE 
             
         p = self.engine.m2.hp/self.engine.m2.max_hp
-        if p <= .15:
-            self.health2.background=RED
-        else:
-            self.health2.background=BLUE
+        self.health2.color= RED if p <= .15 else BLUE 
 
         self.rect3.show_last_row()
 
@@ -158,7 +152,7 @@ class ViewFight(UI_View):
         else : 
             self.counter=0
 
-            if not advance_game_state(self.engine):
+            if not self.engine.advance_game_state():
                 self.buttonNext.enabled = True
                 self.go_to_next_screen = True
             self.update_screen(host)
