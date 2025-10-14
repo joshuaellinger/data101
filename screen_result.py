@@ -20,7 +20,8 @@ class ViewResult(UI_View):
         rect1 = UI_Image("rect1", (310,40,404,110), image="./images/Logo.jpg")
         self.add_element(rect1)
         winner=self.engine.get_winner()
-        rect1 = UI_Image("rect1", (310,195,404,350), image=winner.get_image())
+        monster_image = winner.get_image() if winner else ""
+        rect1 = UI_Image("rect1", (310,195,404,350), image=monster_image)
         self.add_element(rect1)
         rect1 = UI_Button("rect1", (410,550,200,50), text="Play Again")
         self.add_element(rect1)

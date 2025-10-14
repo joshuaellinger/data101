@@ -4,7 +4,7 @@ import pygame
 from pygame.locals import *
 import time
 from ui import *
-from game_engine import GameEngine, GameEvents, advance_game_state, Monster
+from game_engine import GameEngine, GameEvents, Monster
 from typing import List
 
 
@@ -92,7 +92,7 @@ class ViewFight(UI_View):
 
         
         
-        checkbox = UI_Checkbox("checkbox", (310,550,187,70), "Auto")
+        checkbox = UI_Checkbox("checkbox", (310,550,187,50), "Auto")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
         def onChecked(x: UI_Text):
             self.checkbox.checked = not self.checkbox.checked
@@ -102,11 +102,11 @@ class ViewFight(UI_View):
 
         self.checkbox = checkbox
 
-        buttonNext = UI_Button("buttonNext", (527,550,187,70 ), "Next >>")
+        buttonNext = UI_Button("buttonNext", (527,550,187,50 ), "Next >>")
         def onclickNext(x: UI_Text):
             if self.go_to_next_screen:
                 host.select_new_view("viewResult")
-            if not advance_game_state(self.engine):
+            if not self.engine.advance_game_state():
                 self.go_to_next_screen = True
             self.update_screen(host)
 

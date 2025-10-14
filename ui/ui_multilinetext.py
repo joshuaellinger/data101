@@ -59,7 +59,7 @@ class UI_MultiLineText(UI_Element):
 
     def show_last_row(self) -> bool:
         n = len(self._lines) - self.screen_rows
-        self.start_row = n
+        self.start_row = n+1
 
     # --- properties ---
 
