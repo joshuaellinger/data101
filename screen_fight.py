@@ -136,10 +136,10 @@ class ViewFight(UI_View):
             self.textbox.show_last_row()
         elif self.game_over_counter == 2:
             if self.engine.m1.hp <= 0:
-                effect = UI_Effect_Burn(self.image1.rect.inflate(-4,-4))
+                effect = UI_Effect_Burn(self.image1.rect)
                 self.add_effect(effect)
             if self.engine.m2.hp <= 0:
-                effect = UI_Effect_Burn(self.image2.rect.inflate(-4,-4))
+                effect = UI_Effect_Burn(self.image2.rect)
                 self.add_effect(effect)
         elif self.game_over_counter == 5:
             self.buttonNext.enabled = True

@@ -121,7 +121,7 @@ class UI_Effect_Burn(UI_Effect):
         self._burn_points: BurnPoints = None
 
         self._burn_state: np.ndarray = None
-        self._burn_image: pygame.Surface = None
+        self._burn_image: np.ndarry = None
 
         self._weights = self.get_weights()
         super().reset()
@@ -246,5 +246,5 @@ class UI_Effect_Burn(UI_Effect):
             self.expand_burn()
 
         blit_array(image, self._burn_image)
-                
+              
         self.changed = False
