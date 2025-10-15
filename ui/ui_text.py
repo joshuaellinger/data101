@@ -31,8 +31,6 @@ class UI_Text(UI_Element):
                          color=color, background=background)
 
         self._text = text
-        self._text_width = 0
-        self._text_height = 0
         self._alignment = alignment
         self._padding = padding
         self._changed = True
@@ -44,15 +42,7 @@ class UI_Text(UI_Element):
     def text(self, value: str):
         if value == self._text: return
         self._text = value
-        self._text_width = self._text_height = 0
         self._changed = True    
-
-    @property
-    def text_width(self) -> str:
-        return self._text_width
-    @property
-    def text_height(self) -> str:
-        return self._text_height
 
     @property
     def padding(self) -> int:
@@ -76,7 +66,8 @@ class UI_Text(UI_Element):
         if not self._changed: return
 
         surface = create_surface(self.rect.width, self.rect.height, self.background)
-        self._text_width, self._text_height = render_text(surface, self.text, self.color, alignment=self._alignment, padding=self.padding)
+        render_text(surface, self.text, self.color,
+             alignment=self._alignment, padding=self.padding)
         render_border(surface, self.border, self.border_color)
 
         screen.blit(surface, self.rect.topleft)

@@ -47,33 +47,35 @@ def create_surface(width: int, height: int, background: Background) -> pygame.Su
 
 
 def render_text(image: pygame.Surface, text: str, color: pygame.Color, *,
-                alignment = TextAlignment.Center, padding=10, size=48, 
+                alignment = TextAlignment.Center, padding=10, 
+                font_name="Verdana", font_size=30, 
                 background: Background = WHITE) -> Tuple[int,int]:
     "renders a text string on a surface, returns size of text"
-    font = pygame.font.SysFont(None, size)
+    font = pygame.font.SysFont(font_name, font_size)
     txt_image = font.render(text, True, color)
+    txt_width, txt_height = txt_image.get_size()
 
-    r = txt_image.get_bounding_rect()
-    txt_width, txt_height = r.width, r.height
-
+    # if no image provided, make it sized based of the text
     if image == None:
-        # if no image provided, make it sized based of the text
-        loc = (padding, padding)
         image = create_surface(txt_width + padding*2, txt_height + padding*2, background=background)
-    elif alignment == TextAlignment.Left:
-        loc = (padding,padding)
+        image.blit(txt_image, (padding, padding))
+        return
+
+    r_img = image.get_rect()
+    y_loc = (r_img.height - txt_height)//2 
+   
+    if alignment == TextAlignment.Left:
+        x_loc = padding
     elif alignment == TextAlignment.Center:
-        img_width = image.get_bounding_rect().width
-        loc = ((img_width - txt_width)//2, padding)
-    elif alignment == TextAlignment.Right:
-        img_width = image.get_bounding_rect().width
-        loc = (img_width - txt_width - padding, padding)
+        x_loc = (r_img.width - txt_width)//2
+    elif alignment == TextAlignment.Right:        
+        x_loc = r_img.width - txt_width - padding
     else:
         raise Exception(f"Unexpected TextAlignment: {alignment}")
 
-    image.blit(txt_image, loc)
+    image.blit(txt_image, (x_loc, y_loc))
     
-    return (txt_width, txt_height)
+    #return (txt_width, txt_height)
 
 def render_border(image: pygame.Surface, border_width: int, border_color: pygame.Color) -> None:
     "render a border on a surface"

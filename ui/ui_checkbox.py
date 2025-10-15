@@ -18,7 +18,7 @@ class UI_Checkbox(UI_Text):
                  border = 0, padding = 10, checked=False,
                  color: pygame.Color = BUTTON_TEXT,  
                  border_color: pygame.Color = BUTTON_BORDER,
-                 background: Background = BUTTON_BACKGROUND,  
+                 background: Background = CHECKBOX_BACKGROUND,  
                  set_color: pygame.Color = CHECKMARK_SET_COLOR,
                  clear_color: pygame.Color = CHECKMARK_CLEAR_COLOR,
                  ):
@@ -63,6 +63,7 @@ class UI_Checkbox(UI_Text):
     @checked.setter
     def checked(self, val: bool):
         if self._checked == val: return 
+        if not self._enabled: return
         self._checked = val
         self._changed = True
         self._onchange_external(self)
@@ -72,6 +73,7 @@ class UI_Checkbox(UI_Text):
         return self._onchange_external
     @onchange.setter
     def onchange(self, val: UI_EventHandler):
+        if not self._enabled: return
         self._onchange_external = val
 
     def tick(self):
@@ -89,7 +91,7 @@ class UI_Checkbox(UI_Text):
 
         # draw differently if disabled or pending click event
         if not self._enabled or self._counter > 0:
-            c, bg, b = BUTTON_TEXT_DISABLED, BUTTON_BACKGROUND_DISABLED, BUTTON_BORDER_DISABLED
+            c, bg, b = BUTTON_TEXT_DISABLED, self._background, BUTTON_BORDER_DISABLED
         else:
             c, bg, b = self._color, self._background, BUTTON_HOVER if self._hover else self._border_color
 
@@ -97,9 +99,14 @@ class UI_Checkbox(UI_Text):
 
         # draw checkbox
         x = max(min(self._rect.width, self._rect.height), 10) - 2 * self.padding
-        rect = pygame.Rect(self.padding, self.padding, x, x)
+        rect = pygame.Rect(self.padding, self.padding, x, x, color=b)
         subimage = image.subsurface(rect)
-        m = self.set_color if self._checked else self.clear_color
+        if not self._enabled:
+            m = BUTTON_TEXT_DISABLED
+        elif self._checked:
+            m = self.set_color 
+        else:
+            m = self.clear_color
         if self.checked: subimage.fill(m)
         pygame.draw.rect(subimage, b, subimage.get_rect(), width=2)
     
@@ -107,7 +114,7 @@ class UI_Checkbox(UI_Text):
         # draw text with offset
         rect = pygame.Rect(x + self.padding, 0, self._rect.width - x - self.padding, self._rect.height)
         subimage = image.subsurface(rect)
-        self._text_width, self._text_height = render_text(subimage, self._text, c, alignment=self._alignment, padding=self._padding)
+        render_text(subimage, self._text, c, alignment=self._alignment, padding=self._padding)
         
         render_border(image, self._border, b)
 

@@ -83,7 +83,7 @@ class UI_Button(UI_Text):
             c, bg, b = self._color, self._background, BUTTON_HOVER if self._hover else self._border_color
 
         image = create_surface(self._rect.width, self._rect.height, bg)
-        self._text_width, self._text_height = render_text(image, self._text, c, alignment=self._alignment, padding=self._padding)
+        render_text(image, self._text, c, alignment=self._alignment, padding=self._padding)
         render_border(image, self._border, b)
 
         screen.blit(image, self._rect.topleft)

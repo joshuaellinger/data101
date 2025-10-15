@@ -19,8 +19,9 @@ from .ui_helpers import create_surface, render_text, render_border, Background
 class UI_MultiLineText(UI_Element):
     "Mult-Line Text Display with scrolling support"
     def __init__(self, id: str, rect: pygame.Rect, *, 
-                 lines:List[str] = [], font_size=25,
-                 border = 0, padding = 0,
+                 lines:List[str] = [], 
+                 font_name="arial", font_size=25,
+                 border = 0, padding = 2,
                  border_color: pygame.Color = BLUE,
                  color: pygame.Color = BLACK,  
                  background: Background = DARK_GRAY
@@ -30,8 +31,9 @@ class UI_MultiLineText(UI_Element):
                          color=color, background=background)
 
         self._lines = lines
+        self._font_name = font_name
         self._font_size = font_size
-        self._row_height = int(font_size * 0.8)
+        self._row_height = int(font_size * 1.2)
         self._padding = padding
 
         self._start_row = 0
@@ -119,7 +121,7 @@ class UI_MultiLineText(UI_Element):
 
 
     def render_lines(self, image: pygame.Surface):
-        font = pygame.font.SysFont(None, self._font_size)
+        font = pygame.font.SysFont(self._font_name, self._font_size)
 
         offset = self._padding + self._border
         max_width = self._rect.width - 2 * offset

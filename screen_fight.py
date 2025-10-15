@@ -34,7 +34,7 @@ class ViewFight(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
-        textbox = UI_MultiLineText("textbox", (310,180,404,350))          
+        textbox = UI_MultiLineText("textbox", (310,180,404,350), font_size=20)          
         self.add_element(textbox)
         self.textbox = textbox
 
@@ -82,11 +82,10 @@ class ViewFight(UI_View):
         
         checkboxAuto = UI_Checkbox("checkboxAuto", (310,550,187,50), "Auto")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.
-        def onChecked(x: UI_Text):
-            self.checkboxAuto.checked = not self.checkboxAuto.checked
+        def onChange(x: UI_Text):
             self.buttonNext.enabled = self.engine.is_game_over() or not self.checkboxAuto.checked 
             self.tick_counter = 0
-        checkboxAuto.onclick = onChecked
+        checkboxAuto.onchange = onChange
         self.add_element(checkboxAuto)
 
         self.checkboxAuto = checkboxAuto
