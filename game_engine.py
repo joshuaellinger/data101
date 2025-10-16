@@ -187,10 +187,14 @@ class GameEngine:
         self.round_number=-1
         self.fight_order:List[Monster]=[]
         self.events=GameEventsConsole() if events==None else events
-
-        f=open("MonsterStats.json")
-        text=f.read()
-        monsters=json.loads(text)
+        import os
+        file_names=os.listdir("./monsters")
+        monsters=[]
+        for file_name in file_names: 
+            f=open(f"./monsters/{file_name}")
+            text=f.read()
+            monster=json.loads(text)
+            monsters.append(monster)
         self.available_monsters = [Monster(m, self.events) for m in monsters]
 
     @property
@@ -277,7 +281,7 @@ class GameEngine:
                 else: dmgtxt =f"{dmg1}{dt1} and {dmg2}{dt2}"
                 self.events.print(f"{m_opponent.name} takes {dmgtxt} damage.")
                 self.events.print(f"{m_opponent.name} has {m_opponent.hp} HP left.")
-                if crit: self.events.print("Boom!")
+                if crit: self.events.print("Boom! Critical Hit!")
                 if m_opponent.hp<=0:
                     return
             else:
@@ -334,11 +338,11 @@ def run_a_fight(monsters:List[Monster], engine:GameEngine):
         engine.events.signal_start_of_round(engine.round_number)
         engine.events.print(f"=== Round {engine.round_number} ===")
         run_a_round(engine)
-        if enginge._state == GameStateEnum.GAME_OVER:
+        if engine._state == GameStateEnum.GAME_OVER:
             break
 
         engine.round_number+=1
-        enginge._state = GameStateEnum.RUN_ROUND
+        engine._state = GameStateEnum.RUN_ROUND
         engine.events.print()
 
     engine.events.print()
@@ -354,13 +358,13 @@ def run_a_round(engine:GameEngine):
     "fight a single round"
     for i in range(len(engine.fight_order)):
         engine.monster_number = i # changes active when assigned
-        engine._state = GameStateNum.TAKE_TURN
+        engine._state = GameStateEnum.TAKE_TURN
    
         engine.m_active.update_conditions()
         engine.perform_attack()
 
         if engine.m1.hp <= 0 or engine.m2.hp <= 0:
-            engine._state = GameStateNum.GAME_OVER
+            engine._state = GameStateEnum.GAME_OVER
             break
     
 def roll_the_dice(dice:str,crit:bool):

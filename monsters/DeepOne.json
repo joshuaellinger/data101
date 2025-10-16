@@ -1,0 +1,37 @@
+{
+    "Name": "Deep One",
+    "CreatureType": "Humanoid",
+    "Image": "./images/Deep One.jpg",
+    "AC": 13,
+    "Hit Dice": "11d8+22",
+    "Movement": {"Speed": 30, "Swim": 30},
+    "Stats": {
+        "Str": 16,
+        "Dex": 12,
+        "Con": 14,
+        "Int": 10,
+        "Wis": 8,
+        "Cha": 12
+    },
+    "Saving Throws": {"Str":5, "Con":4, "Cha":3},
+    "Skills": null,
+    "Vulnerabilities": "fire",
+    "Resistances":"cold",
+    "Senses": {"darkvision": 120, "passive perception": 9},
+    "Languages": "Common, Void Speech",
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": {
+        "Amphibious": "can breath air and water",
+        "Frenzied Rage": "if 10 damage taken at once, has advantage with Claws, gets +2 to damage with Claws, until end of next turn"
+    },
+    "Actions": {
+        "Multiattack": false,
+        "Claws": {
+            "to hit": 5,
+            "base damage": "2d8+3",
+            "damage type": "slashing",
+            "effect": null
+        }
+    }
+}
