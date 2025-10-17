@@ -1,0 +1,35 @@
+{
+    "Name": "Faerie Dragon",
+    "CreatureType": "Dragon",
+    "Image": "./images/Default-Dragon.jpg",
+    "AC": 15,
+    "Hit Dice": "4d4+4",
+    "Movement": {"Speed":10, "Fly":60},
+    "Stats": {
+        "Str": 3,
+        "Dex": 20,
+        "Con": 13,
+        "Int": 14,
+        "Wis": 12,
+        "Cha": 16
+    },
+    "Saving Throws": null,
+    "Skills": {"arcana":4, "perception":3, "stealth":7},
+    "Vulnerabilities": null,
+    "Resistances": null,
+    "Senses": {"darkvision": 60, "passive perception":13},
+    "Languages": "Draconic, Sylvan", 
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": "innate spellcating, surperior invisibility, limited telepathy, magic resistance",
+    "Actions": {
+        "Multiattack": false,
+        "Bite": {
+            "to hit": 7,
+            "reach": 5,
+            "base damage": "1",
+            "damage type": "piercing damage",
+            "effect": null
+        } 
+    }
+}
