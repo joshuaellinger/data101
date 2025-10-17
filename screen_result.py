@@ -17,7 +17,8 @@ class ViewResult(UI_View):
         screen = host.screen
         screen.fill(GRAY)
         #rect1=Label("=== Results ===",(310,80,404,350))
-        rect1 = UI_Image("rect1", (310,40,404,110), image="./images/Logo.jpg")
+        #rect1 = UI_Image("rect1", (310,40,404,110), image="./images/logo.png")
+        rect1 = UI_Image("rect1", (400,40,250,108), image="./images/logo_temp.png")
         self.add_element(rect1)
         winner=self.engine.get_winner()
         monster_image = winner.get_image() if winner else ""

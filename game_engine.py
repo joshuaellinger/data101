@@ -287,9 +287,9 @@ class GameEngine:
                 if dmg1+dmg2== 0: dmgtxt="no"
                 elif dmg2==0: dmgtxt=f"{dmg1}{dt1}" 
                 else: dmgtxt =f"{dmg1}{dt1} and {dmg2}{dt2}"
+                if crit: self.events.print("Boom! Critical Hit!")
                 self.events.print(f"{m_opponent.name} takes {dmgtxt} damage.")
                 self.events.print(f"{m_opponent.name} has {m_opponent.hp} HP left.")
-                if crit: self.events.print("Boom! Critical Hit!")
                 if m_opponent.hp<=0:
                     return
             else:

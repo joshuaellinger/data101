@@ -16,6 +16,7 @@ class ViewMonsterSelect(UI_View):
         self.engine=engine
         self.m1:Monster=None
         self.m2:Monster=None
+        self.click_counter = 0
         self._last_time = datetime.now().time()
 
     def four_by_four_grid(self,onclickSelect):
@@ -49,14 +50,14 @@ class ViewMonsterSelect(UI_View):
             monster_row=[]
             for col in range(2):
                 if idx >= len(self.engine.available_monsters): 
-                    buttonImage = UI_ImageButton(f"m{row}{col}",(657+col*100,95+row*125,235,235), image="")
+                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*100,40+row*160,150,150), image="")
                     buttonImage.enabled=False
                 elif col%2==0:
                     m=self.engine.available_monsters[idx]
-                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*160,40+row*160,150,150), image=m.get_image())
                 else:
                     m=self.engine.available_monsters[idx]
-                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*160,40+row*160,150,150), image=m.get_image())
                 buttonImage.onclick = onclickSelect
                 self.add_element(buttonImage)
                 idx=idx+1
@@ -67,22 +68,29 @@ class ViewMonsterSelect(UI_View):
         return monsters
 
     def activate(self, host: UI_Host):
+
+        self.click_counter = 0
+
         screen = host.screen
         screen.fill(GRAY)
 
-        text1 = UI_Text("text1", (40,40+110*2, 350, 50))
+        image1 = UI_Image("image1", (40,40, 200,200), border=1, border_color=BLACK)
+        self.add_element(image1)
+
+        text1 = UI_Text("text1", (40,40+220, 200, 40), color=BLACK, background=GRAY,
+          alignment = TextAlignment.Center)
         self.add_element(text1)
         self.text1 = text1
 
-        text2 = UI_Text("text2", (40,40+110*3, 350, 50))
+        image2 = UI_Image("image2", (40+220,40, 200,200), border=1, border_color=BLACK)
+        self.add_element(image2)
+
+        text2 = UI_Text("text2", (40+220,40+220, 200, 40), color=BLACK, background=GRAY,
+          alignment = TextAlignment.Center)
         self.add_element(text2)
         self.text2 = text2
 
-        image1 = UI_Image("image1", (40+35,40+55, 100,100))
-        self.add_element(image1)
-
-        image2 = UI_Image("image2", (40+220,40+55, 100,100))
-        self.add_element(image2)
+     
 
         buttonFight = UI_Button("buttonFight", (40,40+4*100,150,50), "Fight")
         def onclickFight(x: UI_Element):
@@ -91,19 +99,22 @@ class ViewMonsterSelect(UI_View):
         buttonFight.onclick = onclickFight
         self.add_element(buttonFight)
         buttonFight.enabled=False
+        self.buttonFight = buttonFight
 
         def onclickSelect(x: UI_Element):
             tag = x.id.replace("button", "")
-            if text1.text=="":
-                text1.text = f"1: {tag}"
+            if self.click_counter == 0:
+                text1.text = f"{tag}"
                 image1.image = x.background
                 self.m1= self.engine.find_monster_by_name(tag)
+                self.click_counter = 1
             else:
-                text2.text = f"2:{tag}"
+                text2.text = f"{tag}"
                 image2.image = x.background
                 buttonFight.enabled=True
                 buttonFight.color=RED
                 self.m2= self.engine.find_monster_by_name(tag)
+                self.click_counter = 0
 
         #monsters=self.four_by_four_grid()
         monsters=self.two_by_two_grid(onclickSelect)
@@ -116,12 +127,15 @@ class ViewMonsterSelect(UI_View):
             image1.image = ""
             text2.text = ""
             image2.image = ""
+            self.click_counter = 0
         buttonClear.onclick = onclickClear
         self.add_element(buttonClear)
         
 
     def deactivate(self, host: UI_Host):
         self.text1.text = ""
+        self.click_counter = 0
+        self.buttonFight.color = BLACK
         pass
     
     def tick(self, host: UI_Host):

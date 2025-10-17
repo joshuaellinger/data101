@@ -34,7 +34,8 @@ class ViewFight(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
-        title1 = UI_Image("title1", (310,40,404,110, ), image="images/logo.jpg")
+        #title1 = UI_Image("title1", (310,40,404,110), image="images/logo.png")
+        title1 = UI_Image("title1", (400,40,250,108), image="./images/logo_temp.png")
         self.add_element(title1)
         self.title1 = title1
         
