@@ -18,6 +18,54 @@ class ViewMonsterSelect(UI_View):
         self.m2:Monster=None
         self._last_time = datetime.now().time()
 
+    def four_by_four_grid(self,onclickSelect):
+        monsters=[]
+        idx=0
+        for row in range(4):
+            monster_row=[]
+            for col in range(4):
+                if idx >= len(self.engine.available_monsters): 
+                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*125,87.5+row*125,100,100), image="")
+                    buttonImage.enabled=False
+                elif col%2==0:
+                    m=self.engine.available_monsters[idx]
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
+                else:
+                    m=self.engine.available_monsters[idx]
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
+                buttonImage.onclick = onclickSelect
+                self.add_element(buttonImage)
+                idx=idx+1
+
+                monster_row.append(buttonImage)
+            monsters.append(monster_row)
+
+        return monsters
+
+    def two_by_two_grid(self, onclickSelect):
+        monsters=[]
+        idx=0
+        for row in range(2):
+            monster_row=[]
+            for col in range(2):
+                if idx >= len(self.engine.available_monsters): 
+                    buttonImage = UI_ImageButton(f"m{row}{col}",(657+col*100,95+row*125,235,235), image="")
+                    buttonImage.enabled=False
+                elif col%2==0:
+                    m=self.engine.available_monsters[idx]
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
+                else:
+                    m=self.engine.available_monsters[idx]
+                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
+                buttonImage.onclick = onclickSelect
+                self.add_element(buttonImage)
+                idx=idx+1
+
+                monster_row.append(buttonImage)
+            monsters.append(monster_row)
+            
+        return monsters
+
     def activate(self, host: UI_Host):
         screen = host.screen
         screen.fill(GRAY)
@@ -57,26 +105,8 @@ class ViewMonsterSelect(UI_View):
                 buttonFight.color=RED
                 self.m2= self.engine.find_monster_by_name(tag)
 
-        monsters=[]
-        idx=0
-        for row in range(4):
-            monster_row=[]
-            for col in range(4):
-                if idx >= len(self.engine.available_monsters): 
-                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*125,87.5+row*125,100,100), image="")
-                    buttonImage.enabled=False
-                elif col%2==0:
-                    m=self.engine.available_monsters[idx]
-                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
-                else:
-                    m=self.engine.available_monsters[idx]
-                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*125,87.5+row*125,100,100), image=m.get_image())
-                buttonImage.onclick = onclickSelect
-                self.add_element(buttonImage)
-                idx=idx+1
-
-                monster_row.append(buttonImage)
-            monsters.append(monster_row)
+        #monsters=self.four_by_four_grid()
+        monsters=self.two_by_two_grid(onclickSelect)
 
         buttonClear = UI_Button("buttonClear", (240,40+4*100,150,50), "Clear")
         def onclickClear(x: UI_Element):
