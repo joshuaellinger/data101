@@ -138,6 +138,8 @@ class ViewFight(UI_View):
             self.checkboxAuto.enabled = False
             self.buttonNext.enabled = False
             winner=self.engine.get_winner()
+            self.engine.events.print("")
+            self.engine.events.print("")
             if winner != None:
                 self.engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
             else:

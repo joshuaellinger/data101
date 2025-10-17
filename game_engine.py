@@ -244,12 +244,15 @@ class GameEngine:
         m1=self.m1
         m2=self.m2
         self.events.print(f"{m1.name} vs. {m2.name}")
+        self.events.print("")
 
+        self.events.print(f"Roll for Initiative")
         self.fight_order=roll_for_initiative(m1,m2)
         i=1
         for m in self.fight_order:
-            self.events.print(f"{m.name} goes {order_text(i)}")
+            self.events.print(f"  {m.name} goes {order_text(i)}")
             i=i+1
+        self.events.print("")
 
         m1.hp=roll_the_dice(m1.hit_dice, False)
         m1.max_hp=m1.hp
@@ -257,6 +260,11 @@ class GameEngine:
         m2.hp=roll_the_dice(m2.hit_dice, False)
         m2.max_hp=m2.hp
         self.events.print(f"{m2.name} has {m2.hp} HP.")
+
+        self.events.print("")
+        self.events.print("FIGHT!")
+        self.events.print("")
+
         self.round_number=1
         self.monster_number=0
         self._state=GameStateEnum.NEW_ROUND
@@ -348,6 +356,8 @@ def run_a_fight(monsters:List[Monster], engine:GameEngine):
     engine.events.print()
 
     winner=engine.get_winner()
+    engine.events.print("")
+    engine.events.print("")
     if winner != None:
         engine.events.print(f"{winner.name} wins with {winner.hp} HP left!")
     else:

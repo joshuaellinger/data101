@@ -7,7 +7,7 @@ from datetime import datetime
 class ViewWelcome(UI_View):
     "display a screen to show progress bar, text, and button widgets"
     def __init__(self):
-        super().__init__("viewWelcome", "Text/Button/Progress")
+        super().__init__("viewWelcome", "Welcome to MONSTER SMASH")
 
         self._last_time = datetime.now().time()
 
