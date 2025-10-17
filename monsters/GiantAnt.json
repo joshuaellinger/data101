@@ -1,7 +1,7 @@
 {
     "Name": "Giant Ant",
     "CreatureType": "Beast",
-    "Image": "./images/Giant Ant.jpg",
+    "Image": "./images/GiantAnt.jpg",
     "AC": 14,
     "Hit Dice": "7d10+14",
     "Movement": {"Speed":40},

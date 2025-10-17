@@ -34,7 +34,12 @@ class ViewFight(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
-        textbox = UI_MultiLineText("textbox", (310,180,404,350), font_size=20)          
+        title1 = UI_Image("title1", (310,40,404,110, ), image="images/logo.jpg")
+        self.add_element(title1)
+        self.title1 = title1
+        
+        textbox = UI_MultiLineText("textbox", (310,170,404,360), font_size=20, 
+            border=1, border_color=BLACK)          
         self.add_element(textbox)
         self.textbox = textbox
 
@@ -42,43 +47,49 @@ class ViewFight(UI_View):
 
         self.engine.start_fight()
 
-        image1 = UI_Image("image1", (30,170,250,250), image=self.engine.m1.get_image())
+        image1 = UI_Image("image1", (30,170,250,250), image=self.engine.m1.get_image(), 
+            border=1, border_color=BLACK)
         self.add_element(image1)
         self.image1 = image1
         
-        name1 = UI_Text("name1", (30,40,250,50), text=self.engine.m1.name)
+        name1 = UI_Text("name1", (30,110,250,50), text=self.engine.m1.name, 
+                color=BLACK, background=GRAY, 
+                alignment = TextAlignment.Center)
         self.add_element(name1)
         self.name1 = name1
 
         hp = self.engine.m1.hp
-        health1 = UI_ProgressBar("health1", (30,450,250,40), current=hp, maximum=hp)
+        health1 = UI_ProgressBar("health1", (30,450,250,40), current=hp, maximum=hp,
+            border=2, border_color=BLACK)
         self.add_element(health1)
         self.health1 = health1
 
-        stats1 = UI_Text("stats1", (30,490,250,40), text="-- / -- HP")
+        stats1 = UI_Text("stats1", (30,490,250,40), text="-- / -- HP", 
+            background=GRAY, alignment = TextAlignment.Center)
         self.add_element(stats1)
         self.stats1 = stats1
         
-        image2 = UI_Image("image2", (744,170,250,250), image=self.engine.m2.get_image())
+        image2 = UI_Image("image2", (744,170,250,250), image=self.engine.m2.get_image(), 
+            border=1, border_color=BLACK)
         self.add_element(image2)
         self.image2 = image2
 
-        name2 = UI_Text("name2", (744,40,250,50), text=self.engine.m2.name)
+        name2 = UI_Text("name2", (744,110,250,50), text=self.engine.m2.name, 
+            color=BLACK, background=GRAY,
+            alignment = TextAlignment.Center)
         self.add_element(name2)
         self.name2 = name2
 
         hp = self.engine.m2.hp
-        health2 = UI_ProgressBar("health2", (744,450,250,40), current=hp, maximum=hp)
+        health2 = UI_ProgressBar("health2", (744,450,250,40), current=hp, maximum=hp,
+            border=2, border_color=BLACK)
         self.add_element(health2)
         self.health2 = health2
 
-        stats2 = UI_Text("stats2", (744,490,250,40), text="-- / -- HP")
+        stats2 = UI_Text("stats2", (744,490,250,40), text="-- / -- HP", 
+            background=GRAY, alignment = TextAlignment.Center)
         self.add_element(stats2)
         self.stats2 = stats2
-        
-        title1 = UI_Image("title1", (310,55,404,110, ), image="images/logo.jpg")
-        self.add_element(title1)
-        self.title1 = title1
         
         checkboxAuto = UI_Checkbox("checkboxAuto", (310,550,187,50), "Auto")
         #on click it switches between auto and manual mode. when manual, the box displays auto. if u click it u go in auto mode and the text changes to manual.

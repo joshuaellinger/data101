@@ -21,7 +21,7 @@ class ViewResult(UI_View):
         self.add_element(rect1)
         winner=self.engine.get_winner()
         monster_image = winner.get_image() if winner else ""
-        rect1 = UI_Image("rect1", (310,195,404,350), image=monster_image)
+        rect1 = UI_Image("rect1", (310,175,404,350), image=monster_image, border=2)
         self.add_element(rect1)
         rect1 = UI_Button("rect1", (410,550,200,50), text="Play Again")
         self.add_element(rect1)

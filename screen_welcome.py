@@ -18,19 +18,36 @@ class ViewWelcome(UI_View):
         #rect1=Label("welcome!",(310,80,404,350))
         rect1 = UI_Image("rect1", (310,40,404,110), image="./images/Logo.jpg")
         self.add_element(rect1)
-        rect1 = UI_Image("rect1", (310,195,404,350), image="./images/Welcome.jpg")
-        self.add_element(rect1)
-        self.rect1 = rect1
+
+        self.counter = 0
+        self.selected = 0
+        self.image_list = ["Owlbear", "DeepOne", "GiantAnt", "Ogre"]
+
+        rect2 = UI_Image("rect2", (310,195,404,350), image=f"./images/owlbear-O.png", border=1)
+        self.add_element(rect2)
+        self.rect2 = rect2
         def onclickNext(x: UI_Text):
             host.select_new_view("viewMonsterSelect")
-        rect1.onclick = onclickNext
+        rect2.onclick = onclickNext
         
+
     def deactivate(self, host: UI_Host):
         self.clear()
 
     def tick(self, host: UI_Host):
         # update the time every 1/30 of a second
+        
+        self.counter += 1
+        if self.counter > 30*5:
+            self.counter = 0
+            self.selected += 1
+            if self.selected >= len(self.image_list):
+                self.selected = 0
+            self.rect2.image=f"./images/{self.image_list[self.selected]}.jpg"
+        
         super().tick(host)
+
+
 
 def screen_welcome():
     host = UI_Host()

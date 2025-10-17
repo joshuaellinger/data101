@@ -1,7 +1,7 @@
 {
     "Name": "Deep One",
     "CreatureType": "Humanoid",
-    "Image": "./images/Deep One.jpg",
+    "Image": "./images/DeepOne.jpg",
     "AC": 13,
     "Hit Dice": "11d8+22",
     "Movement": {"Speed": 30, "Swim": 30},

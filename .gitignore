@@ -3,3 +3,4 @@ monsters.db
 *.pyc
 browser/build
 code_examples/build
+_env/
