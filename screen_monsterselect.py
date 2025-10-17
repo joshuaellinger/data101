@@ -52,9 +52,27 @@ class ViewMonsterSelect(UI_View):
                 if idx >= len(self.engine.available_monsters): 
                     buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*100,40+row*160,150,150), image="")
                     buttonImage.enabled=False
-                elif col%2==0:
+                else:
                     m=self.engine.available_monsters[idx]
                     buttonImage = UI_ImageButton(f"{m.name}",(500+col*160,40+row*160,150,150), image=m.get_image())
+                buttonImage.onclick = onclickSelect
+                self.add_element(buttonImage)
+                idx=idx+1
+
+                monster_row.append(buttonImage)
+            monsters.append(monster_row)
+            
+        return monsters
+
+    def three_by_three_grid(self, onclickSelect):
+        monsters=[]
+        idx=0
+        for row in range(3):
+            monster_row=[]
+            for col in range(3):
+                if idx >= len(self.engine.available_monsters): 
+                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*160,40+row*160,150,150), image="")
+                    buttonImage.enabled=False
                 else:
                     m=self.engine.available_monsters[idx]
                     buttonImage = UI_ImageButton(f"{m.name}",(500+col*160,40+row*160,150,150), image=m.get_image())
@@ -117,7 +135,8 @@ class ViewMonsterSelect(UI_View):
                 self.click_counter = 0
 
         #monsters=self.four_by_four_grid()
-        monsters=self.two_by_two_grid(onclickSelect)
+        #monsters=self.two_by_two_grid(onclickSelect)
+        monsters=self.three_by_three_grid(onclickSelect)
 
         buttonClear = UI_Button("buttonClear", (240,40+4*100,150,50), "Clear")
         def onclickClear(x: UI_Element):
