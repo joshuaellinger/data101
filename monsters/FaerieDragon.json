@@ -27,7 +27,7 @@
         "Bite": {
             "to hit": 7,
             "reach": 5,
-            "base damage": "1",
+            "base damage": "1d1+0",
             "damage type": "piercing damage",
             "effect": null
         } 
