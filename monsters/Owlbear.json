@@ -1,7 +1,7 @@
 {
     "Name": "Owlbear",
     "CreatureType": "Monstrosity",
-    "Image": "./images/Default-Monstrosity.jpg",
+    "Image": "./images/Owlbear.jpg",
     "AC": 13,
     "Hit Dice": "7d10+21",
     "Movement": {"Speed":40},
