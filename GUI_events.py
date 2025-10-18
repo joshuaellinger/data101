@@ -23,7 +23,7 @@
 class Monster:
     def __init__(self, name:str,hp:int):
         self.monster_name=name
-        self.monster_type="Deep One"
+        self.monster_type=""
         self.max_hp=hp
         self.current_hp=hp
 

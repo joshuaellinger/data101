@@ -133,7 +133,25 @@ class Monster:
 
     def __str__(self):
         return f"<Monster {self.name}>"
-    
+
+    def validate(self):
+        # check that image exists
+        path = self.get_image()
+        import os
+        if not os.path.exists(path):
+            raise Exception(f"Invalid Image {path} path in json file")
+
+        if type(self.hit_dice) == int:
+            raise Exception(f"Hit Dice ({self.hit_dice} should not be a number")
+        roll_the_dice(self.hit_dice, False)
+
+        # check that we can parse attacks and have at least one
+        attacks = self.get_attacks()
+        if len(attacks) == 0:
+            raise Exception("No attacks configured")
+        for a in attacks:            
+            roll_the_dice(a.dice, False)
+
     def copy(self) -> "Monster":
         return Monster(self.data, self.events)
 
@@ -191,11 +209,21 @@ class GameEngine:
         file_names=os.listdir("./monsters")
         monsters=[]
         for file_name in file_names: 
-            f=open(f"./monsters/{file_name}")
-            text=f.read()
-            monster=json.loads(text)
-            monsters.append(monster)
-        self.available_monsters = [Monster(m, self.events) for m in monsters]
+            if file_name.startswith("_"):
+                print(f"Skip ./monsters/{file_name}")
+                continue
+            try:
+                f=open(f"./monsters/{file_name}")
+                text=f.read()
+                m_json = json.loads(text)
+                m = Monster(m_json, self.events)
+                m.validate()
+                monsters.append(m)
+            except Exception as ex:
+                print(f"Error loading {file_name}")
+                print(f"   {ex}") 
+
+        self.available_monsters = monsters
 
     @property
     def m1(self) -> Monster:
@@ -382,10 +410,18 @@ def roll_the_dice(dice:str,crit:bool):
     "rolls dice based on json discription"
 
     parts=dice.split("d")
+    if len(parts) != 2: 
+        raise Exception(f"Invalid dice spec: {dice}")
     parts2=parts[1].split("+")
-    dmgmod=parts2[1] if len(parts2)==2 else 0
+    if len(parts) > 2: 
+        raise Exception(f"Invalid dice spec: {dice}")
+    dmgmod=parts2[1] if len(parts2)==2 else "0"
     dmgdice=parts2[0]
     rollamount=parts[0]
+
+    if not dmgmod.isdecimal() or not dmgdice.isdecimal() or not rollamount.isdecimal(): 
+        raise Exception(f"Invalid dice spec: {dice}")
+
     totaldmg=int(dmgmod)
     for idx in range(int(rollamount)):
         totaldmg=totaldmg+random.randint(1,int(dmgdice))
