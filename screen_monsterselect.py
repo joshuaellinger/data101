@@ -71,11 +71,11 @@ class ViewMonsterSelect(UI_View):
             monster_row=[]
             for col in range(3):
                 if idx >= len(self.engine.available_monsters): 
-                    buttonImage = UI_ImageButton(f"m{row}{col}",(500+col*160,40+row*160,150,150), image="")
+                    buttonImage = UI_ImageButton(f"m{row}{col}",(510+col*160,40+row*160,150,150), image="")
                     buttonImage.enabled=False
                 else:
                     m=self.engine.available_monsters[idx]
-                    buttonImage = UI_ImageButton(f"{m.name}",(500+col*160,40+row*160,150,150), image=m.get_image())
+                    buttonImage = UI_ImageButton(f"{m.name}",(510+col*160,40+row*160,150,150), image=m.get_image())
                 buttonImage.onclick = onclickSelect
                 self.add_element(buttonImage)
                 idx=idx+1
@@ -95,7 +95,7 @@ class ViewMonsterSelect(UI_View):
         image1 = UI_Image("image1", (40,40, 200,200), border=1, border_color=BLACK)
         self.add_element(image1)
 
-        text1 = UI_Text("text1", (40,40+220, 200, 40), color=BLACK, background=GRAY,
+        text1 = UI_Text("text1", (30,40+220, 220, 40), color=BLACK, background=GRAY,
           alignment = TextAlignment.Center)
         self.add_element(text1)
         self.text1 = text1
@@ -103,7 +103,7 @@ class ViewMonsterSelect(UI_View):
         image2 = UI_Image("image2", (40+220,40, 200,200), border=1, border_color=BLACK)
         self.add_element(image2)
 
-        text2 = UI_Text("text2", (40+220,40+220, 200, 40), color=BLACK, background=GRAY,
+        text2 = UI_Text("text2", (30+220,40+220, 220, 40), color=BLACK, background=GRAY,
           alignment = TextAlignment.Center)
         self.add_element(text2)
         self.text2 = text2

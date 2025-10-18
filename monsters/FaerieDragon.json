@@ -1,7 +1,7 @@
 {
     "Name": "Faerie Dragon",
     "CreatureType": "Dragon",
-    "Image": "./images/Default-Dragon.jpg",
+    "Image": "./images/faiere_dragon.jpg",
     "AC": 15,
     "Hit Dice": "4d4+4",
     "Movement": {"Speed":10, "Fly":60},

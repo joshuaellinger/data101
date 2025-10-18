@@ -1,7 +1,7 @@
 {
     "Name": "Grick",
     "CreatureType": "Monstrosity",
-    "Image": "./images/Default-Monstrosity.jpg",
+    "Image": "./images/grick.jpg",
     "AC": 14,
     "Hit Dice": "6d8",
     "Movement": {"Speed":30, "Climb":30},

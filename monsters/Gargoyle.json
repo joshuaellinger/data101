@@ -1,7 +1,7 @@
 {
     "Name": "Gargoyle",
     "CreatureType": "Elemental",
-    "Image": "./images/Default-Elemental.jpg",
+    "Image": "./images/gargoyle.jpg",
     "AC": 15,
     "Hit Dice": "7d8+21",
     "Movement": {"Speed":30, "Fly":60},
