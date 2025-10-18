@@ -92,18 +92,18 @@ class ViewMonsterSelect(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
-        image1 = UI_Image("image1", (40,40, 200,200), border=1, border_color=BLACK)
+        image1 = UI_Image("image1", (40,115, 200,200), border=1, border_color=BLACK)
         self.add_element(image1)
 
-        text1 = UI_Text("text1", (30,40+220, 220, 40), color=BLACK, background=GRAY,
+        text1 = UI_Text("text1", (30,115+220, 220, 40), color=BLACK, background=GRAY,
           alignment = TextAlignment.Center)
         self.add_element(text1)
         self.text1 = text1
 
-        image2 = UI_Image("image2", (40+220,40, 200,200), border=1, border_color=BLACK)
+        image2 = UI_Image("image2", (40+220,115, 200,200), border=1, border_color=BLACK)
         self.add_element(image2)
 
-        text2 = UI_Text("text2", (30+220,40+220, 220, 40), color=BLACK, background=GRAY,
+        text2 = UI_Text("text2", (30+220,115+220, 220, 40), color=BLACK, background=GRAY,
           alignment = TextAlignment.Center)
         self.add_element(text2)
         self.text2 = text2
@@ -165,7 +165,7 @@ class ViewMonsterSelect(UI_View):
 def screen_monsterselect():
     #draw_text(is_started)
     host=UI_Host()
-    host.register_view(ViewMonsterSelect())
+    host.register_view(ViewMonsterSelect(GameEngine()))
     host.run_game()
 if __name__ =="__main__":
     screen_monsterselect()
