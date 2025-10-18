@@ -1,7 +1,7 @@
 {
     "Name": "Giant Ape",
     "CreatureType": "Beast",
-    "Image": "./images/Default-Beast.jpg",
+    "Image": "./images/giant_ape.jpg",
     "AC": 12,
     "Hit Dice": "15d12+60",
     "Movement": {"Speed":40, "Climb": 40},

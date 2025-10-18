@@ -1,7 +1,7 @@
 {
     "Name": "Zombie",
     "CreatureType": "Undead",
-    "Image": "./images/Default-Undead.jpg",
+    "Image": "./images/zombie.jpg",
     "AC": 8,
     "Hit Dice": "3d8+9",
     "Movement": {"Speed":20},
