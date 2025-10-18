@@ -30,7 +30,7 @@ class ViewResult(UI_View):
         textDevs.add_line("SmashDevs:")
         textDevs.add_line("")
         textDevs.add_line("  Sam Ellinger - LASA 2028")
-        textDevs.add_line("     Game Engine")
+        textDevs.add_line("     D&D Engine")
         textDevs.add_line("")
         textDevs.add_line("  Ruby Ragsdale - LASA 2028")
         textDevs.add_line("     Monster Select")
