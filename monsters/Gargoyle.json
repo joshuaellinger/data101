@@ -1,0 +1,43 @@
+{
+    "Name": "Gargoyle",
+    "CreatureType": "Elemental",
+    "Image": "./images/Default-Elemental.jpg",
+    "AC": 15,
+    "Hit Dice": "7d8+21",
+    "Movement": {"Speed":30, "Fly":60},
+    "Stats": {
+        "Str": 15,
+        "Dex": 11,
+        "Con": 16,
+        "Int": 6,
+        "Wis": 11,
+        "Cha": 7
+    },
+    "Saving Throws": null,
+    "Skills": null,
+    "Vulnerabilities": null,
+    "Resistances": "bludgeoning, piercing, slashing",
+    "Immunities": "poison",
+    "Senses": {"darkvision": 60, "passive perception":10},
+    "Languages": "Terran", 
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": "false appearance",
+    "Actions": {
+        "Multiattack": true,
+        "Bite": {
+            "to hit": 4,
+            "reach": 5,
+            "base damage": "1d6+2",
+            "damage type": "piercing",
+            "effect": null
+        },
+        "Claws": {
+            "to hit": 4,
+            "reach": 5,
+            "base damage": "1d6+2",
+            "damage type": "slashing",
+            "effect": null
+        } 
+    }
+}
