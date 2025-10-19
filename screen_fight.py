@@ -184,13 +184,18 @@ class ViewFight(UI_View):
 
 
 
-def screen_fight(is_started):
+async def screen_fight(is_started):
     #draw_text(is_started)
 
 
     host = UI_Host()
-    host.register_view(ViewFight())
-    host.run_game()
+    engine = GameEngine()
+    engine.select_monsters(engine.available_monsters[0:2])
+    host.register_view(ViewFight(engine))
+    await host.run_game()
     
 if __name__ == "__main__":
-    screen_fight(False)
+    import asyncio
+    asyncio.run(screen_fight(False))
+
+    

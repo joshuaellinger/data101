@@ -277,13 +277,14 @@ class View4(UI_View):
 
 
 # main loop for sample
-def main():
+async def main():
     host = UI_Host()
     host.register_view(View1())
     host.register_view(View2())
     host.register_view(View3())
     host.register_view(View4())
-    host.run_game("view4")
+    await host.run_game("view4")
     
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())

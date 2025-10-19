@@ -28,6 +28,8 @@
 # See sample_screens.py for an example
 #
 
+import asyncio
+
 import pygame
 from pygame.locals import *
 import time
@@ -196,12 +198,12 @@ class UI_Host:
         self.next_view = self.views[idx]
 
 
-    def run_game(self, start_at=""):
+    async def run_game(self, start_at=""):
 
         # open the screen
         self.screen = pygame.display.set_mode(self.screen_size)
-        self.clock = pygame.time.Clock()
 
+        # self.clock = pygame.time.Clock()
 
         #sysfont = pygame.font.get_default_font()
         #font = pygame.font.SysFont(None, 48)
@@ -214,6 +216,9 @@ class UI_Host:
         pygame.display.set_caption(self.current_view.caption)
 
         #ui_timer.TIMER.record(f"RUN {self.fps}")
+
+        delay_sec = 1.0/self.fps
+        ts_prev = time.time_ns()
 
         # MAIN GAME LOOP
         running = True
@@ -247,8 +252,17 @@ class UI_Host:
                 pygame.display.set_caption(self.current_view.caption)
 
             # limit update rate to FPS (frames-per-second)
-            self.clock.tick(self.fps) 
-        
+
+            ts = time.time_ns()
+            delta_sec = 1e-9*(ts - ts_prev)
+            ts_prev = ts
+
+            sleep_for = delay_sec - delta_sec
+            if sleep_for < 0.0: sleep_for = 0.0
+            await asyncio.sleep(sleep_for)  # Let other tasks run
+
+            # self.clock.tick(self.fps) 
+
         #ui_timer.TIMER.record("QUIT")
 
         pygame.mixer.quit()

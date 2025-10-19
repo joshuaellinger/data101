@@ -4,3 +4,4 @@ monsters.db
 browser/build
 code_examples/build
 _env/
+build/

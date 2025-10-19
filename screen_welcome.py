@@ -13,6 +13,7 @@ class ViewWelcome(UI_View):
 
     def activate(self, host: UI_Host):
 
+        print("welcome - activate")
         screen = host.screen
         screen.fill(GRAY)
         #rect1 = UI_Image("rect1", (310,40,404,110), image="./images/logo.png")
@@ -49,10 +50,11 @@ class ViewWelcome(UI_View):
 
 
 
-def screen_welcome():
+async def screen_welcome():
     host = UI_Host()
     host.register_view(ViewWelcome())
-    host.run_game()
+    await host.run_game()
         
 if __name__ == "__main__":
-    screen_welcome()
+    import asyncio
+    asyncio.run(screen_welcome())

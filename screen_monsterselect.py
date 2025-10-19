@@ -162,10 +162,12 @@ class ViewMonsterSelect(UI_View):
     
 
 
-def screen_monsterselect():
+async def screen_monsterselect():
     #draw_text(is_started)
     host=UI_Host()
     host.register_view(ViewMonsterSelect(GameEngine()))
-    host.run_game()
+    await host.run_game()
+
 if __name__ =="__main__":
-    screen_monsterselect()
+    import asyncio
+    asyncio.run(screen_monsterselect())

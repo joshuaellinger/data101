@@ -29,7 +29,7 @@ class ViewResult(UI_View):
         self.add_element(textDevs)
         textDevs.add_line("SmashDevs:")
         textDevs.add_line("")
-        textDevs.add_line("  Sam 'The Blonde One' Ellinger - LASA 2028")
+        textDevs.add_line("  Sam 'The Blonde One' - LASA 2028")
         textDevs.add_line("     D&D Engine")
         textDevs.add_line("")
         textDevs.add_line("  Ruby Ragsdale - LASA 2028")
@@ -53,10 +53,12 @@ class ViewResult(UI_View):
         # update the time every second
         super().tick(host)
 
-def screen_result():
+async def screen_result():
     host = UI_Host()
-    host.register_view(ViewResult(GameEngine()))
-    host.run_game()
+    engine = GameEngine()
+    host.register_view(ViewResult(engine))
+    await host.run_game()
         
 if __name__ == "__main__":
-    screen_result()
+    import asyncio
+    asyncio.run(screen_result())
