@@ -1,118 +1,193 @@
-# to run:
-#   1. pip install pygbag
-#   2. (optional) add the scripts directory to your path if missing
-#   3. cd ./browser
-#   4. type pygbag.exe .\main.py
-#   5. open a web page at http://localhost:8000
+# Simple example of using UI_Host
 
 import pygame
-import random
-import asyncio
-import time
+from pygame.locals import *
+from datetime import datetime, time
 
-# Initialize pygame
-pygame.init()
+from typing import List
 
-pygame.display.set_caption("Moving Circle")
+from ui import *
 
-# Constants
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
-CIRCLE_RADIUS = 15
+class View1(UI_View):
+    "display a screen to show progress bar, text, and button widgets"
+    def __init__(self):
+        super().__init__("view1", "Text/Button/Progress")
 
-SPEED = 5
-INC_SPEED = 1
-MAX_SPEED = 50
+        self._last_time = datetime.now().time()
 
-# Colors
-RED = (255, 0, 0)
-COLORS = [(255, 255, 255), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+    def activate(self, host: UI_Host):
 
-# Global variables
-#circle_x = random.randint(CIRCLE_RADIUS, SCREEN_WIDTH - CIRCLE_RADIUS)
-#circle_y = random.randint(CIRCLE_RADIUS, SCREEN_HEIGHT - CIRCLE_RADIUS)
-circle_x = SCREEN_WIDTH // 2
-circle_y = SCREEN_HEIGHT // 2
-circle_dx = SPEED
-circle_dy = 0
-circle_color = RED
-running = True
+        screen = host.screen
+        screen.fill(GRAY)
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Click the Circle")
-clock = pygame.time.Clock()
+        self.last_time = datetime.now()
+        label = UI_Text("label1", (40,40,150,50), text="...")
+        self.add_element(label)
+        self.label = label
 
 
-async def main():
-    global circle_x, circle_y, circle_dx, circle_dy, circle_color, running
+        progress1 = UI_ProgressBar("progress1", (40,40+2*75,150,50))
+        self.add_element(progress1)
+        self.progress1 = progress1
 
-    fps = 10
-    delay_ns = int(1e9/fps)
+        checkbox1 = UI_Checkbox("checkbox1", (40,40+4*75, 150, 50), text="run", checked=True)
+        self.add_element(checkbox1)
+        self.checkbox1 = checkbox1
 
-    print("run")
-    count = 0
-
-    ts = time.time_ns()
-    while running:
+        progress2 = UI_ProgressBar("progress2", (40+200,40,50,150), 
+            current=20, maximum=20,
+            orientation=Orientation.Vertical)
+        self.add_element(progress2)
+        self.progress2 = progress2
         
-        # check if we have at least 100ms between updates
-        ts2 = time.time_ns()
-        d = ts2 - ts
-        if d < delay_ns: 
-            redraw = False
-        else:
-            redraw = True
-            ts = ts2
+        buttonReset = UI_Button("buttonReset", (40,40+75,150,50), "Reset")
+        def onclick(x: UI_Text):
+            self.progress2.current = 20
+            self.progress2.color = BLUE
+        buttonReset.onclick = onclick
+        self.add_element(buttonReset)
 
-        if redraw:
-            # Clear the screen
-            screen.fill((0, 0, 0))
+        buttonNext = UI_Button("buttonNext", (40,40+3*75,150,50), "Next >>")
+        def onclickNext(x: UI_Text):
+            host.select_new_view("view2")
+        buttonNext.onclick = onclickNext
+        self.add_element(buttonNext)
 
-            # Draw the circle
-            pygame.draw.circle(screen, circle_color, (circle_x, circle_y), CIRCLE_RADIUS)
+    def deactivate(self, host: UI_Host):
+        self.clear()
 
-            # Move the circle
-            circle_x += circle_dx
-            circle_y += circle_dy
+    def tick(self, host: UI_Host):
+        t = datetime.now()
 
-            # Check for wall collision
-            if circle_x - CIRCLE_RADIUS <= 0 or circle_x + CIRCLE_RADIUS >= SCREEN_WIDTH:
-                circle_dx = -circle_dx
-            if circle_y - CIRCLE_RADIUS <= 0 or circle_y + CIRCLE_RADIUS >= SCREEN_HEIGHT:
-                circle_dy = -circle_dy
+        if not self.checkbox1.checked:
+            self.last_time = t
+        else: 
+            # update the time every second
+            diff = t - self.last_time
+            if diff.total_seconds() >= 1: 
+                self.label.text = f"{t.hour:02d}:{t.minute:02d}:{t.second:02d}"
+                self.last_time = t
+                self.progress1.current += 1
+                self.progress2.current -= 1
+                if self.progress2.percentage <= 0.5:
+                    self.progress2.color = RED 
+
+        super().tick(host)
+
+# ------------------------------------------------------------------
+
+class View2(UI_View):
+    "display a screen to show scrolling text widget"
+    def __init__(self):
+        super().__init__("view2", "ScrollingText")
+
+        self._line_num = 0
+        self._last_time = datetime.now()
+
+    def activate(self, host: UI_Host):
+        screen = host.screen
+        screen.fill(GRAY)
+
+        self._line_num = 0
+
+        textBox1 = UI_MultiLineText("textBox1", (40, 40, 440, 335))
+        self.add_element(textBox1)
+        self.textBox1 = textBox1
+
+        buttonBack = UI_Button("buttonBack", (40,40+5*75,150,50), "<< Back")
+        def onclickBack(x: UI_Text):
+            host.select_new_view("view1")
+        buttonBack.onclick = onclickBack
+        self.add_element(buttonBack)
+
+        buttonNext = UI_Button("buttonNext", (40+150+20,40+5*75,150,50), "Next >>")
+        def onclickNext(x: UI_Text):
+            host.select_new_view("view3")
+        buttonNext.onclick = onclickNext
+        self.add_element(buttonNext)
+
+    def deactivate(self, host: UI_Host):
+        self.textBox1.clear()
+        self.textBox1.deactivate()
+    
+    def tick(self, host: UI_Host):
+
+        # add a row every second and scroll when full up to 20
+        t = datetime.now()
+        diff = t - self._last_time
+        if diff.total_seconds() >= 0.10 and self._line_num <= 20: 
+            self._line_num += 1
+            self.textBox1.add_line(f"Line #{self._line_num}")
+            self.textBox1.show_last_row()
+            self._last_time = t
+
+        super().tick(host)
 
 
-        # Check for events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                distance = ((mouse_x - circle_x) ** 2 + (mouse_y - circle_y) ** 2) ** 0.5
-                if distance <= CIRCLE_RADIUS:
-                    circle_dx = -circle_dx
-                    circle_color = random.choice([c for c in COLORS if c != circle_color])
-            if event.type == pygame.KEYDOWN:
-                key = event.dict["key"]
-                if key == pygame.K_UP:
-                    circle_dy = max(circle_dy - INC_SPEED, 0) 
-                elif key == pygame.K_DOWN: 
-                    circle_dy = min(circle_dy + INC_SPEED, MAX_SPEED) 
-                elif key == pygame.K_LEFT: 
-                    circle_dx = max(circle_dx - INC_SPEED, 0)
-                elif key == pygame.K_RIGHT: 
-                    circle_dx = min(circle_dx + INC_SPEED, MAX_SPEED) 
-                elif key == pygame.K_SPACE:
-                    running = False
-                
+# ------------------------------------------------------------------
 
-        if redraw:
-            pygame.display.flip()
+class View3(UI_View):
+    "display a screen to show image widgets"
+    def __init__(self):
+        super().__init__("view3", "Images")
+        self._last_time = datetime.now().time()
 
-        count += 1
-        if count % 10 == 0:
-            print(f"wait {count}")
-        await asyncio.sleep(0.05)  # Let other tasks run
+    def activate(self, host: UI_Host):
+        screen = host.screen
+        screen.fill(GRAY)
 
-# This is the program entry point
-asyncio.run(main())
+        text1 = UI_Text("text1", (40,40+110*2, 350, 50))
+        self.add_element(text1)
+        self.text1 = text1
+
+        image1 = UI_Image("image1", (40+150,40+55, 100,100), border_color=RED)
+        self.add_element(image1)
+        self.image1 = image1
+
+        def onclickSelect(x: UI_Element):
+            tag = x.id.replace("button", "")
+            text1.text = f"Selected {tag}"
+            image1.image = x.background
+
+        buttonImageGiantAnt = UI_Button("buttonGiantAnt", (40,40,100,100), "", background="./images/GiantAnt.jpg")
+        buttonImageGiantAnt.onclick = onclickSelect
+        self.add_element(buttonImageGiantAnt)
+        buttonImageDeepOne = UI_ImageButton("buttonDeepOne", (40,40+110,100,100), image="./images/DeepOne.jpg")
+        buttonImageDeepOne.onclick = onclickSelect
+        self.add_element(buttonImageDeepOne)
+
+        buttonBack = UI_Button("buttonBack", (40,40+4*100,150,50), "<< Back")
+        def onclickBack(x: UI_Element):
+            host.select_new_view("view2")
+        buttonBack.onclick = onclickBack
+        self.add_element(buttonBack)
+
+        buttonNext = UI_Button("buttonNext", (40+150+20,40+4*100,150,50), "Next >>")
+        def onclickNext(x: UI_Text):
+            host.select_new_view("view4")
+        buttonNext.onclick = onclickNext
+        self.add_element(buttonNext)
+
+    def deactivate(self, host: UI_Host):
+        self.text1.text = ""
+        host.stop_music()
+        pass
+    
+    def tick(self, host: UI_Host):
+        super().tick(host)
+
+    def update(self, surface: pygame.Surface):        
+        super().update(surface)
+
+
+# main loop for sample
+async def main():
+    host = UI_Host()
+    host.register_view(View1())
+    host.register_view(View2())
+    host.register_view(View3())
+    await host.run_game("view1")
+    
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())

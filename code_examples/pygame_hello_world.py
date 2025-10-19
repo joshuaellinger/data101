@@ -97,8 +97,8 @@ def draw_an_image():
     screen = pygame.display.set_mode((800, 800))
 
     images=[]
-    images.append( pygame.image.load('../images/Giant Ant.jpg'))
-    images.append( pygame.image.load('../images/Deep One.jpg'))
+    images.append( pygame.image.load('../images/GiantAnt.jpg'))
+    images.append( pygame.image.load('../images/DeepOne.jpg'))
     images.append( pygame.image.load('../images/Gelatinous Cube.jpg'))
     images.append( pygame.image.load('../images/'))
     for img in images:

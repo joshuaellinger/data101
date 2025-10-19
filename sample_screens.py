@@ -137,7 +137,6 @@ class View3(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
-        host.play_background_music("./sounds/473_Prison_Block.mp3")
 
         text1 = UI_Text("text1", (40,40+110*2, 350, 50))
         self.add_element(text1)
@@ -152,10 +151,10 @@ class View3(UI_View):
             text1.text = f"Selected {tag}"
             image1.image = x.background
 
-        buttonImageGiantAnt = UI_Button("buttonGiantAnt", (40,40,100,100), "", background="./images/Giant Ant.jpg")
+        buttonImageGiantAnt = UI_Button("buttonGiantAnt", (40,40,100,100), "", background="./images/GiantAnt.jpg")
         buttonImageGiantAnt.onclick = onclickSelect
         self.add_element(buttonImageGiantAnt)
-        buttonImageDeepOne = UI_ImageButton("buttonDeepOne", (40,40+110,100,100), image="./images/Deep One.jpg")
+        buttonImageDeepOne = UI_ImageButton("buttonDeepOne", (40,40+110,100,100), image="./images/DeepOne.jpg")
         buttonImageDeepOne.onclick = onclickSelect
         self.add_element(buttonImageDeepOne)
 
