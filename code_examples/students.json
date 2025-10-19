@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Sam",
+        "title": "Shady Riddler",
+        "hours": [
+            10
+        ],
+        "tasks": {
+            "install dev-tools": false,
+            "write and run hello-world": false,
+            "check-in a change": false
+        },
+        "knowledge": {
+            "basic types: int, float, bool, str": "noob",
+            "container types: list, dict": "noob",
+            "variables": "noob",
+            "functions": "noob"
+        }
+    },
+    {
+
+        "name": "Ruby",
+        "title": "CAPCOM",
+        "hours": [
+            0,
+
+        
+            4,
+            3
+        ],
+        "tasks": {
+            "install dev-tools": false,
+            "write and run hello-world": false,
+            "check-in a change": false
+        },
+        "knowledge": {
+            "basic types: int, float, bool, str": "noob",
+            "container types: list, dict": "noob",
+            "variables": "noob",
+            "functions": "noob"
+        }
+    }
+]

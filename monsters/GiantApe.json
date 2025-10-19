@@ -1,0 +1,44 @@
+{
+    "Name": "Giant Ape",
+    "CreatureType": "Beast",
+    "Image": "./images/giant_ape.jpg",
+    "AC": 12,
+    "Hit Dice": "15d12+60",
+    "Movement": {"Speed":40, "Climb": 40},
+    "Stats": {
+        "Str": 23,
+        "Dex": 14,
+        "Con": 18,
+        "Int": 7,
+        "Wis": 12,
+        "Cha": 7
+    },
+    "Saving Throws": null,
+    "Skills": null,
+    "Vulnerabilities": null,
+    "Resistances": null,
+    "Senses": {"blindsight": 60, "passive perception":9},
+    "Languages": null,
+    "Proficiency Bonus": 2,
+    "CR": 7,
+    "Traits": {
+        "Keen Smell": "has advantage on Wisdom(Perception) checks relying on smell"
+    },
+    "Actions": {
+        "Multiattack": true,
+        "Fist1": {
+            "to hit": 9,
+            "reach": 10,
+            "base damage": "3d10+6",
+            "damage type": "bludgeoning",
+            "effect": null
+        },
+        "Fist2": {
+            "to hit": 9,
+            "reach": 10,
+            "base damage": "3d10+6",
+            "damage type": "bludgeoning",
+            "effect":null
+        }
+    }
+}

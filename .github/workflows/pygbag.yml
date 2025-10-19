@@ -1,6 +1,8 @@
 name: pygbag_build
 on: [workflow_dispatch]
 
+permissions:
+  contents: write
 
 jobs:  
   build-pygbag:
@@ -8,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Checkout
       run: |
             python3 -m pip install pygbag
@@ -17,5 +19,5 @@ jobs:
     - name : "Upload to GitHub pages"
       uses: JamesIves/github-pages-deploy-action@4.1.7
       with:
-        branch: gh_pages
+        branch: gh-pages
         folder: browser/build/web

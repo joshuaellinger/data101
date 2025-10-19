@@ -1,0 +1,35 @@
+{
+    "Name": "Ogre",
+    "CreatureType": "Giant",
+    "Image": "./images/Ogre.jpg",
+    "AC": 11,
+    "Hit Dice": "7d10+21",
+    "Movement": {"Speed":40},
+    "Stats": {
+        "Str": 19,
+        "Dex": 8,
+        "Con": 16,
+        "Int": 5,
+        "Wis": 7,
+        "Cha": 7
+    },
+    "Saving Throws": null,
+    "Skills": null,
+    "Vulnerabilities": null,
+    "Resistances": null,
+    "Senses": {"darkvision": 60, "passive perception":8},
+    "Languages": "Common, Giant", 
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": null,
+    "Actions": {
+        "Multiattack": false,
+        "Greatclub": {
+            "to hit": 6,
+            "reach": 5,
+            "base damage": "2d8+4",
+            "damage type": "bludgeoning",
+            "effect": null
+        } 
+    }
+}
