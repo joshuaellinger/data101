@@ -143,8 +143,19 @@ class UI_Host:
     "Manages the pygame engine, a shared screen, and a list of views"
 
     def __init__(self, *, width=1024, height=650, fps=30):    
+
+        self.screen_too_small = False
+        display_size = pygame.display.get_desktop_sizes()[0]
+        if display_size[0] < width:
+            width = self.display[0]
+            self.screen_too_small = True
+        if display_size[1] < height:
+            height = self.display[1]
+            self.screen_too_small = True
+        
         self.screen_size = (width, height)
         self.fps = fps # frames per second
+
 
         self.views: List[UI_View] = []
         
