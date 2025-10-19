@@ -1,0 +1,48 @@
+{
+    "Name": "Giant Ant",
+    "CreatureType": "Beast",
+    "Image": "./images/GiantAnt.jpg",
+    "AC": 14,
+    "Hit Dice": "7d10+14",
+    "Movement": {"Speed":40},
+    "Stats": {
+        "Str": 15,
+        "Dex": 13,
+        "Con": 15,
+        "Int": 1,
+        "Wis": 9,
+        "Cha": 2
+    },
+    "Saving Throws": null,
+    "Skills": null,
+    "Vulnerabilities": null,
+    "Resistances": null,
+    "Senses": {"blindsight": 60, "passive perception":9},
+    "Languages": null,
+    "Proficiency Bonus": 2,
+    "CR": 2,
+    "Traits": {
+        "Keen Smell": "has advantage on Wisdom(Perception) checks relying on smell"
+    },
+    "Actions": {
+        "Multiattack": true,
+        "Bite": {
+            "to hit": 4,
+            "reach": 5,
+            "base damage": "1d8+2",
+            "damage type": "piercing",
+            "effect": "grapple, escDC 12, Str; until grapple ends, target is Restrained"
+        },
+        "Sting": {
+            "to hit": 4,
+            "reach": 5,
+            "base damage": "1d8+2",
+            "damage type": "piercing",
+            "effect": {
+                "type": "poison",
+                "save": "DC 12, Con; 1/2 damage if success",
+                "damage": "2d10"
+            }
+        }
+    }
+}
