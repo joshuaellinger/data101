@@ -203,7 +203,7 @@ class View4(UI_View):
 
         buttonAnt = UI_Button("buttonAnt", (40,40+5*100,150,50), "Ant")
         def onclickAnt(x: UI_Text):
-            self.image1.image = "images/Giant Ant.jpg"
+            self.image1.image = "images/GiantAnt.jpg"
             self.image1.changed = True
         buttonAnt.onclick = onclickAnt
         self.add_element(buttonAnt)
