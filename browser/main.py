@@ -136,6 +136,7 @@ class View3(UI_View):
         screen = host.screen
         screen.fill(GRAY)
 
+
         text1 = UI_Text("text1", (40,40+110*2, 350, 50))
         self.add_element(text1)
         self.text1 = text1
@@ -162,12 +163,6 @@ class View3(UI_View):
         buttonBack.onclick = onclickBack
         self.add_element(buttonBack)
 
-        buttonNext = UI_Button("buttonNext", (40+150+20,40+4*100,150,50), "Next >>")
-        def onclickNext(x: UI_Text):
-            host.select_new_view("view4")
-        buttonNext.onclick = onclickNext
-        self.add_element(buttonNext)
-
     def deactivate(self, host: UI_Host):
         self.text1.text = ""
         host.stop_music()
@@ -179,6 +174,8 @@ class View3(UI_View):
     def update(self, surface: pygame.Surface):        
         super().update(surface)
 
+# ------------------------------------------------------------------
+
 
 # main loop for sample
 async def main():
@@ -186,7 +183,7 @@ async def main():
     host.register_view(View1())
     host.register_view(View2())
     host.register_view(View3())
-    await host.run_game("view1")
+    await host.run_game("view3")
     
 if __name__ == "__main__":
     import asyncio
