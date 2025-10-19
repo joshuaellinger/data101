@@ -49,6 +49,9 @@ async def main():
     fps = 10
     delay_ns = int(1e9/fps)
 
+    print("run")
+    count = 0
+
     ts = time.time_ns()
     while running:
         
@@ -78,6 +81,7 @@ async def main():
             if circle_y - CIRCLE_RADIUS <= 0 or circle_y + CIRCLE_RADIUS >= SCREEN_HEIGHT:
                 circle_dy = -circle_dy
 
+
         # Check for events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -105,7 +109,10 @@ async def main():
         if redraw:
             pygame.display.flip()
 
-        await asyncio.sleep(0)  # Let other tasks run
+        count += 1
+        if count % 10 == 0:
+            print(f"wait {count}")
+        await asyncio.sleep(0.05)  # Let other tasks run
 
 # This is the program entry point
 asyncio.run(main())
